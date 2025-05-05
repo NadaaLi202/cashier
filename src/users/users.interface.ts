@@ -10,10 +10,8 @@ export interface Users extends Document{
      password: string;
     readonly role : Role;
     readonly active : boolean;
-    googleId : string;
+    // googleId : string;
     hasPassword: boolean;
-    wishList : Schema.Types.ObjectId[];
-    address : Address [];
     passwordChangedAt : Date | number;
     passwordResetCode: string | undefined;
     passwordResetCodeExpires: Date | number | undefined;
@@ -23,13 +21,5 @@ export interface Users extends Document{
 
 }
 
-type Role = "admin" | "employee" | "user" ;
+type Role = 'admin' | 'cashier' | 'customer' | 'headOfDepartment' | 'accountant' | 'manager';
 
-export interface  Address  {
-
-    street : string;
-    city : string;
-    state : string;
-    country : string;
-    zipCode : string;
-};

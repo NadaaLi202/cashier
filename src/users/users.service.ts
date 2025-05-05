@@ -18,7 +18,7 @@ class UsersService {
     getUserById = refactorService.getOneById<Users>(usersSchema );
     updateUser = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 
-        const user : Users | null = await usersSchema.findByIdAndUpdate(req.params.id,{name: req.body.name , image: req.body.image, active: req.body.active}, { new: true });
+        const user : Users | null = await usersSchema.findByIdAndUpdate(req.params.id,{name: req.body.name ,username: req.body.username, active: req.body.active}, { new: true });
 
         if (!user) return next (new ApiError(`${req.__('not_found')}`, 404));
         res.status(200).json({ message:"User updated successfully",data: sanitization.User(user)});
@@ -39,19 +39,19 @@ class UsersService {
 
     });
 
-    uploadImage = uploadSingleFile(['image'], 'image'); // type , fieldName
-    saveImage = async(req:Request,res: Response, next: NextFunction) => {
+    // uploadImage = uploadSingleFile(['image'], 'image'); // type , fieldName
+    // saveImage = async(req:Request,res: Response, next: NextFunction) => {
         
-        if(req.file) {
-            const fileName = `users.${Date.now()}-image.webp`;
-            await sharp(req.file.buffer)
-                .resize(1200, 1200)
-                .webp({quality: 95})
-                .toFile(`uploads/images/users/${fileName}`);
-                req.body.image = fileName;
-        }
-        next()
-    }
+    //     if(req.file) {
+    //         const fileName = `users.${Date.now()}-image.webp`;
+    //         await sharp(req.file.buffer)
+    //             .resize(1200, 1200)
+    //             .webp({quality: 95})
+    //             .toFile(`uploads/images/users/${fileName}`);
+    //             req.body.image = fileName;
+    //     }
+    //     next()
+    // }
 
 
 
