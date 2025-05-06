@@ -3,6 +3,8 @@ import expressAsyncHandler from "express-async-handler";
 import { Department } from "./department.interface";
 import departmentSchema from "./department.schema";
 import ApiError from "../utils/apiErrors";
+import { uploadSingleFile } from "../middleware/uploadFiles.middleware";
+import sharp from "sharp";
 
 
 
@@ -60,7 +62,24 @@ class DepartmentsService {
     })
 
 
-}
+
+     uploadImage = uploadSingleFile(['image'], 'image');
+    saveImage = async (req: Request, res: Response, next: NextFunction) => {
+        
+        if (req.file) {
+            const fileName = `departments.${Date.now()}-image.webp`;
+            await sharp(req.file.buffer)
+            .resize(1200, 1200)
+            .webp({quality: 95})
+            .toFile(`uploads/images/department/${fileName}`);
+            req.body.image = fileName;
+    }
+    next()
+        }
+
+    }
+
+
 const departmentService = new DepartmentsService();
 
 export default departmentService

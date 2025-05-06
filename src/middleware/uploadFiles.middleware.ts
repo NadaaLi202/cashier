@@ -2,17 +2,6 @@ import {Request} from "express";
 import multer from "multer";
 import ApiErrors from "../utils/apiErrors";
 
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, 'uploads/images/products');
-//     },
-//     filename: (req, file, cb) => {
-//         const ext = file.mimetype.split('/')[1];
-//         const fileName: string = `product-${Date.now()}-cover.${ext}`;
-//         cb(null, fileName);
-//     }
-//
-// })
 
 interface Fields {
     name: string;

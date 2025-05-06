@@ -10,8 +10,7 @@ export interface Meal extends Document {
     departmentId : Schema.Types.ObjectId;
     ingredients : string;
     price : number;
-    category : Category;
+    numberOfMeals : number
 }
 
 
-type Category = 'breakfast' | 'lunch' | 'dinner' | 'drinks' | 'snacks';
