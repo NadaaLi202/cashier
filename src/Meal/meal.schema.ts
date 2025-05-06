@@ -17,4 +17,12 @@ const  mealSchema = new mongoose.Schema<Meal>({
     numberOfMeals : {type : Number , required : true,default : 1},
 },{timestamps : true})
 
+
+const imagesUrl = (document : Meal ) => {
+
+    if(document.image && document.image.startsWith('meal'))  document.image = `${process.env.BASE_URL}/images/meal/${document.image}`
+};
+
+mealSchema.post('save',imagesUrl);
+
 export default mongoose.model<Meal>('Meals',mealSchema);
