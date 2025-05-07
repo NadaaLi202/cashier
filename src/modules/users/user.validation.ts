@@ -1,5 +1,5 @@
 import { body, param } from "express-validator";
-import validatorMiddleware from "../middleware/validator.middleware";
+import validatorMiddleware from "../../middleware/validator.middleware";
 import usersSchema from "./users.schema";
 
 

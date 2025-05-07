@@ -1,17 +1,18 @@
 import { body, param } from "express-validator";
-import validatorMiddleware from "../middleware/validator.middleware";
-import mealSchema from "./meal.schema";
+import departmentSchema from "./department.schema";
+import validatorMiddleware from "../../middleware/validator.middleware";
+import { describe } from "node:test";
 
 
-class MealsValidation {
+class DepartmentsValidation {
 
     createOne = [
         body('name').notEmpty().withMessage((val, {req}) => req.__('validation_field'))
         .isLength({min : 2, max : 50}).withMessage('name must be at least 3 characters long')
         .custom(async( val: string, {req}) => {
 
-        const meal = await  mealSchema.findOne({name : val});
-        if(meal) throw new Error(`${req.__('not_found')}`);
+        const department = await  departmentSchema.findOne({name : val});
+        if(department) throw new Error(`${req.__('not_found')}`);
         return true;
     }),
      body('description').notEmpty().withMessage((val, {req}) => req.__('validation_field'))
@@ -24,8 +25,8 @@ class MealsValidation {
         .isLength({min : 2, max : 50}).withMessage('name must be at least 2 characters long')
         .custom(async( val: string, {req}) => {
 
-        const meal = await mealSchema.findOne({name : val});
-        if(meal && meal._id!.toString() !== req.params?.id.toString()) throw new Error('Meal already exists');
+        const department = await departmentSchema.findOne({name : val});
+        if(department && department._id!.toString() !== req.params?.id.toString()) throw new Error('Department already exists');
         return true;
     }), validatorMiddleware ]
 
@@ -38,6 +39,6 @@ class MealsValidation {
    validatorMiddleware ]
 }
 
-const mealsValidation = new MealsValidation();
+const departmentsValidation = new DepartmentsValidation();
 
-export default mealsValidation;
+export default departmentsValidation;

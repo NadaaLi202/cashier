@@ -1,12 +1,12 @@
 import expressAsyncHandler from "express-async-handler";
-import refactorService from "../refactor.service";
+import refactorService from "../../refactor.service";
 import { Users } from "./users.interface";
 import usersSchema from "./users.schema";
 import { NextFunction, Request, Response } from "express";
-import ApiError from "../utils/apiErrors";
-import { uploadSingleFile } from "../middleware/uploadFiles.middleware";
+import ApiError from "../../utils/apiErrors";
+import { uploadSingleFile } from "../../middleware/uploadFiles.middleware";
 import sharp from "sharp";
-import sanitization from "../utils/sanitization";
+import sanitization from "../../utils/sanitization";
 
 
 

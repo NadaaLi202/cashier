@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
-import ApiError from "../utils/apiErrors";
+import ApiError from "../../utils/apiErrors";
 import { Meal } from "./meal.interface";
 import mealSchema from "./meal.schema";
 

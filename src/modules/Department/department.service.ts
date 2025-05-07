@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import { Department } from "./department.interface";
 import departmentSchema from "./department.schema";
-import ApiError from "../utils/apiErrors";
+import ApiError from "../../utils/apiErrors";
 
 
 

@@ -2,12 +2,12 @@ import expressAsyncHandler from "express-async-handler";
 import { Request, Response, NextFunction } from "express";
 import crypto from "crypto";
 import usersSchema from "../users/users.schema";
-import ApiError from "../utils/apiErrors";
+import ApiError from "../../utils/apiErrors";
 import bcrypt from "bcryptjs";
-import createTokens from "../utils/token";
-import sanitization from "../utils/sanitization";
+import createTokens from "../../utils/token";
+import sanitization from "../../utils/sanitization";
 import jwt from "jsonwebtoken"
-import sendEmail from "../utils/sendMail";
+import sendEmail from "../../utils/sendMail";
 
 
 

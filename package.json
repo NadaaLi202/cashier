@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon main.ts"
+    "dev": "nodemon main.ts"
   },
   "keywords": [],
   "author": "",
@@ -26,10 +26,12 @@
     "i18n": "^0.15.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.3",
+    "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.16",
     "passport-google-oauth20": "^2.0.0",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "zod": "^3.24.4"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -44,6 +46,7 @@
     "@types/hpp": "^0.2.6",
     "@types/i18n": "^0.13.12",
     "@types/jsonwebtoken": "^9.0.7",
+    "@types/morgan": "^1.9.9",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.10.2",
     "@types/nodemailer": "^6.4.17",

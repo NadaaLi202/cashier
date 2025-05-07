@@ -12,6 +12,7 @@ import compression from 'compression';
 import expressMongoSanitize from 'express-mongo-sanitize';
 import helmet from 'helmet';
 import csrf from 'csurf'
+import morgan from 'morgan';
 
 const app: express.Application = express();
 
@@ -20,14 +21,15 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization','X-CSRF-Token'],
   methods : ['GET', 'POST', 'PUT', 'DELETE','OPTIONS'],
   credentials : true 
-
+ 
 }));
 
-app.use(express.json({limit : '10kb'}));
+app.use(express.json({ limit : '10kb' }));
 app.use(expressMongoSanitize()) // لازم في الاول 
 app.use(helmet({crossOriginResourcePolicy : {policy: 'same-site'}}));
 app.use(cookieParser());
 app.use(compression());
+app.use(morgan('dev'));
 
 let server : Server;
 dotenv.config();

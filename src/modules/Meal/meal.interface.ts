@@ -6,11 +6,12 @@ export interface Meal extends Document {
     readonly name : string;
     description: string;
     image : string;
-    userId : Schema.Types.ObjectId;
-    departmentId : Schema.Types.ObjectId;
+    managerId : string;
+    deptId : string;
     ingredients : string;
     price : number;
     category : Category;
+    isAvailable : boolean;
 }
 
 

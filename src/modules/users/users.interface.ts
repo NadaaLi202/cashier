@@ -2,24 +2,25 @@
 import { Document , Schema } from "mongoose";
 
 export interface Users extends Document{
-
     readonly username : string;
-    readonly name : string;
-     age : number;
+    name : string;
     readonly email: string;
-     password: string;
-    readonly role : Role;
+    password: string;
+    readonly role : UserRoles;
     readonly active : boolean;
-    // googleId : string;
     hasPassword: boolean;
     passwordChangedAt : Date | number;
     passwordResetCode: string | undefined;
     passwordResetCodeExpires: Date | number | undefined;
     passwordResetCodeVerified: boolean | undefined ;
     image: string;
-    
-
 }
 
-type Role = 'admin' | 'cashier' | 'customer' | 'headOfDepartment' | 'accountant' | 'manager';
-
+export enum UserRoles  {
+    ADMIN = 'admin',
+    CASHIER = 'cashier',
+    CUSTOMER = 'customer',
+    MANAGER = 'manager',
+    ACCOUNTANT = 'accountant',
+    WAITER = 'waiter',
+}
