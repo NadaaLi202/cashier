@@ -3,21 +3,27 @@ import { IDBModel } from "../../utils/general";
 export interface IPayment extends IDBModel {
     orderId: string;
     cashierId: string;
-    amount: number;
-    paymentMethod: PaymentMethod;
+    paymentMethods: {
+        method: PaymentMethod;
+        amount: number;
+    }[];
+    discount?: number;
+    totalAmount: number;
 }
 
 export enum PaymentMethod {
     CASH = 'cash',
-    CARD = 'card',
+    VISA = 'visa',
 }
 
 export interface ICreatePayment {
     cashierId: string;
     orderId: string;
-    amount: number;
     discount?: number;
-    paymentMethod: PaymentMethod;
+    paymentMethods: {
+        method: PaymentMethod;
+        amount: number;
+    }[];
 }
 
 

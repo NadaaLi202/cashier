@@ -2,7 +2,7 @@ import { FilterQuery, Model, UpdateQuery } from "mongoose";
 import { Order } from "./order.schema";
 import { IOrder } from "./order.types";
 
-class OrderRepository<T> {
+class OrderRepository<T = IOrder> {
 
     constructor(private orderModel: Model<T>) {}
 
@@ -15,7 +15,7 @@ class OrderRepository<T> {
     }
 
     async findOne(query: FilterQuery<T>): Promise<T | null> {
-        return this.orderModel.findById(query);
+        return this.orderModel.findOne(query);
     }
 
     async findMany(query: FilterQuery<T>, { limit, skip }: { limit: number, skip: number }): Promise<T[]> {

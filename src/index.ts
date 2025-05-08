@@ -42,8 +42,7 @@ const Routes : (app : Application) => void = (app: express.Application) : void =
     app.use('/api/v1/order', ordrRouter)
     app.use('/api/v1/table', tableRoutes)
     app.use('/api/v1/payment', paymentRouter)
-    app.all('*', (req:express.Request, res:express.Response, next:express.NextFunction) => {
-        
+    app.all('*', (req:express.Request, res:express.Response, next:express.NextFunction) => {  
         next(new ApiError(`Route ${req.originalUrl} not found`, 404));
     })
     app.use(globalErrorHandler);

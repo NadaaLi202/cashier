@@ -12,7 +12,12 @@ router.route('/')
         asyncHandler(orderCtrl.createOrder)
     )
     .get(
-        isAuthunticated(),
+        isAuthunticated([
+            UserRoles.WAITER, 
+            UserRoles.MANAGER, 
+            UserRoles.CASHIER,
+            UserRoles.ACCOUNTANT
+        ]),
         asyncHandler(orderCtrl.getAllOrders)
     )
 
@@ -25,6 +30,35 @@ router.route('/:id')
         isAuthunticated([UserRoles.MANAGER]),
         asyncHandler(orderCtrl.deleteMealFromOrder)
     )
+
+router.patch(
+    '/:id/change-table',
+    isAuthunticated([UserRoles.WAITER]),
+    asyncHandler(orderCtrl.changeTable)
+)
+
+router.patch(
+    '/:id/complete',
+    isAuthunticated([UserRoles.CASHIER]),
+    asyncHandler(orderCtrl.completeOrder)
+)
+
+router.patch(
+    '/:id/cancel',
+    isAuthunticated([UserRoles.MANAGER]),
+    asyncHandler(orderCtrl.cancelOrder)
+)
+
+router.get(
+    '/get-by-code/:orderCode',
+    isAuthunticated([
+        UserRoles.WAITER,
+        UserRoles.MANAGER,
+        UserRoles.CASHIER,
+        UserRoles.ACCOUNTANT
+    ]),
+    asyncHandler(orderCtrl.getOrderByCode)
+)
 
 export const ordrRouter = router;
 

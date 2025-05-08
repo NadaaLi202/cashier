@@ -2,6 +2,7 @@ import { Router } from "express";
 import { UserRoles } from "../users/users.interface";
 import { isAuthunticated } from "../../middleware/auth.middleware";
 import { paymentCtrl } from "./payment.controller";
+import asyncHandler from "express-async-handler";
 
 const router = Router();
 
@@ -9,17 +10,17 @@ router
     .route('/')
     .post( 
         isAuthunticated([UserRoles.CASHIER]),
-        paymentCtrl.createPayment
+        asyncHandler(paymentCtrl.createPayment)
     )
     .get(
         isAuthunticated([UserRoles.MANAGER]),
-        paymentCtrl.getAllPayments
+        asyncHandler(paymentCtrl.getAllPayments)
     );
 
 router
-    .route('/:paymentId')
+    .route('/:id')
     .get(
         isAuthunticated([UserRoles.MANAGER]),
-        paymentCtrl.getPaymentById
+        asyncHandler(paymentCtrl.getPaymentById)
     );
 export const paymentRouter = router;

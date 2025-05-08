@@ -2,7 +2,7 @@ import { Document } from "mongoose";
 import { IOrder } from "../Order";
 
 export interface ISubOrder extends Document {
-    deptId: string;
+    departmentId: string;
     orderId: string;
     orderItems: SubOrderMealItem[];
     status: OrderStatus;   
@@ -12,7 +12,7 @@ export interface ISubOrder extends Document {
 }
 
 export interface ICreateSubOrder {
-    deptId: string;
+    departmentId: string;
     orderId: string;
     orderItems: SubOrderMealItem[];
 }

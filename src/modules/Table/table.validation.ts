@@ -13,9 +13,9 @@ export const updateTableSchema = z.object({
 
 export const getAllTablesSchema = z.object({
     location: z.nativeEnum(TableLocations).optional(),
-    isAvailable: z.boolean().optional()
+    isAvailable: z.enum(['true', 'false']).transform(val => val === 'true').optional()
 })
 
 export const getTableByNumberSchema = z.object({
-    tableNumber: z.number().positive().int()
+    tableNumber: z.coerce.number().positive().int()
 })

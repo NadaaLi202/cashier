@@ -11,11 +11,11 @@ class TableRepository<T = ITable> {
     }
 
     async updateOne(query: FilterQuery<T>, data: UpdateQuery<T>): Promise<T | null> {
-        return  this.tableModel.findByIdAndUpdate(query, data, { new: true });
+        return this.tableModel.findOneAndUpdate(query, data, { new: true });
     }
 
     async findOne(query: FilterQuery<T>): Promise<T | null> {
-        return this.tableModel.findById(query);
+        return this.tableModel.findOne(query);
     }
 
     async findMany(query: FilterQuery<T>): Promise<T[]> {

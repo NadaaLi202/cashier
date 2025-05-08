@@ -8,8 +8,9 @@ export interface IOrder extends IDBModel {
     orderItems: IOrderMealItem[];
     subtotalPrice: number;
     totalPrice: number;
-    discount: number;
+    discount?: number;
     status: OrderStatus;
+    isPaid: boolean;
     // paymentId: string;  
     // paymentData?: IPayment    
     // waiterData?: IUser;
@@ -26,7 +27,7 @@ export interface ICreateOrder {
 }
 
 export interface IOrderMealItem {
-    deptId: string;
+    departmentId: string;
     mealId: string;
     quantity: number;
     price: number;

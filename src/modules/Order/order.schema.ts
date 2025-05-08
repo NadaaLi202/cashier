@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose";
+import { Schema, model } from "mongoose";
 import { IOrder, OrderStatus } from "./order.types";
 
 const orderSchema = new Schema({
@@ -13,21 +13,20 @@ const orderSchema = new Schema({
     //     required: false
     // },
     orderCode: {
-        type: String,
-        required: true
+        type: String
     },
     tableNumber: {
         type: Number,
         required: true
     },
     orderItems: [{
-        deptId: {
-            type: mongoose.Schema.Types.ObjectId,
+        departmentId: {
+            type: Schema.Types.ObjectId,
             ref: 'Department',
             required: true
         },
         mealId: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: 'Meal',
             required: true
         },
@@ -62,6 +61,10 @@ const orderSchema = new Schema({
         enum: Object.values(OrderStatus),
         default: 'pending'
     },
+    isPaid: {
+        type: Boolean,
+        default: false
+    }
 }, {
     timestamps : true,
     toJSON: {               
@@ -76,11 +79,27 @@ const orderSchema = new Schema({
 
 orderSchema.pre('save', async function(next) {
     if(this.isNew) {
-        this.orderCode = `ORD-${Date.now()}`;
+        let isUnique = false;
+        let orderCode;
+        
+        // Keep generating until we find a unique code
+        while (!isUnique) {
+            const random = Math.floor(1000000 + Math.random() * 9000000);
+            orderCode = `ORD-${random}`;
+            
+            // Check if this code already exists
+            const existingOrder = await (this.constructor as any).findOne({ orderCode });
+            
+            if (!existingOrder) {
+                isUnique = true;
+            }
+        }
+        
+        this.orderCode = orderCode;
     }
     this.totalPrice = this.subtotalPrice - (this.discount || 0);
     next();
-})
+});
 
 // orderSchema.virtual('paymentData', {
 //     ref: 'Payment',

@@ -8,7 +8,7 @@ export const orderItemSchema = z.object({
 })
 
 export const createOrderSchema = z.object({
-    tableNumber: z.number(),
+    tableNumber: z.number().int().positive(),
     orderItems: z.array(orderItemSchema),
 })
 
@@ -24,4 +24,12 @@ export const getAllOrdersSchema = z.object({
     date: z.coerce.date().optional(),
     waiterId: z.string().regex(MONGODBObjectId, 'invalid waiter id').optional(),
     status: z.nativeEnum(OrderStatus).optional(),
+})
+
+export const changeTableSchema = z.object({
+    tableNumber: z.number().int().positive(),
+})
+
+export const getOrderByCodeSchema = z.object({
+    orderCode: z.string().regex(/^ORD-\d{7}$/, 'invalid order code'),
 })

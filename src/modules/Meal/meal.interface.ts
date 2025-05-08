@@ -1,13 +1,15 @@
 
 
 import { Document , Schema } from "mongoose";
-export interface Meal extends Document {
+import { IDBModel } from "../../utils/general";
+
+export interface Meal extends IDBModel {
 
     readonly name : string;
     description: string;
     image : string;
     managerId : string;
-    deptId : string;
+    departmentId : string;
     ingredients : string;
     price : number;
     category : Category;

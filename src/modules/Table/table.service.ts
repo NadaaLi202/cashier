@@ -12,6 +12,11 @@ class TableService {
         return !!table
     }
 
+    async isTableAvalible(number: number) {
+        const table = await this.tableDataSource.findOne({ number, isAvailable: true })
+        return !!table
+    }
+
     async createTable(data: ICreateTable) {
         try {
             const { number } = data;
@@ -21,6 +26,7 @@ class TableService {
             }
             return this.tableDataSource.createOne(data);
         } catch (error) {
+            console.log(error);
             if (error instanceof ApiError) {
                 throw error
             }
@@ -54,10 +60,8 @@ class TableService {
 
     async getAllTables({ isAvailable, location }: { isAvailable?: boolean, location?: TableLocations }) {
         try {
+            
             let query: { isAvailable?: boolean, location?: TableLocations } = {}
-            if (isAvailable) {
-                query.isAvailable = isAvailable
-            }
             if (location) {
                 query.location = location
             }

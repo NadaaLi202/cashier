@@ -2,7 +2,7 @@ import mongoose, { Schema, model } from "mongoose";
 import { ISubOrder, OrderStatus } from "./subOrder.types";
 
 const subOrderSchema = new Schema({
-    deptId: {
+    departmentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Department',
         required: true

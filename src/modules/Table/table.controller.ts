@@ -41,8 +41,10 @@ const deleteTable = async (req: AuthRequest, res: Response) => {
 }
 
 const getAllTables = async (req: AuthRequest, res: Response) => {
+    console.log('Query before validation:', req.query);  // Should show { isAvailable: 'false' }
     const { isAvailable, location } = getAllTablesSchema.parse(req.query);
-
+    console.log('After validation:', { isAvailable, location });  // Should show { isAvailable: false }
+    
     const tables = await tableService.getAllTables({ isAvailable, location });
 
     res.status(200).json({ 

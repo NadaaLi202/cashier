@@ -2,28 +2,29 @@ import { Router } from "express";
 import { isAuthunticated } from "../../middleware/auth.middleware";
 import { UserRoles } from "../users/users.interface";
 import { tableCtrl } from "./table.controller";
+import asyncHandler from "express-async-handler";
 
 const router = Router();
 
 router.route('/')
     .post( 
         isAuthunticated([ UserRoles.MANAGER ]),
-        tableCtrl.addTable
+        asyncHandler(tableCtrl.addTable)
     )
     .get(
         isAuthunticated([ UserRoles.MANAGER ]),
-        tableCtrl.getAllTables
+        asyncHandler(tableCtrl.getAllTables)
     )
 
 router.
     route('/:tableNumber')
-    .put(
+    .patch(
         isAuthunticated([UserRoles.MANAGER]),
-        tableCtrl.updateTable
+        asyncHandler(tableCtrl.updateTable)
     )
     .delete(
         isAuthunticated([ UserRoles.MANAGER ]),
-        tableCtrl.deleteTable
+        asyncHandler(tableCtrl.deleteTable)
     )
 
 

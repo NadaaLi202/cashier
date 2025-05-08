@@ -8,7 +8,10 @@ const userRouter : Router =  Router();
 // userRouter.use(authService.protectedRoutes, authService.checkActive, authService.allowedTo('admin'))
 
 
-userRouter.get('/',usersService.getAllUsers)
+userRouter.get(
+    '/',
+    usersService.getAllUsers
+)
 userRouter.post('/addUser',usersValidation.createOne,usersService.createUser)
  userRouter.get('/:id',usersValidation.getOne,usersService.getUserById);
  userRouter.put('/:id',usersValidation.updateOne,usersService.updateUser);

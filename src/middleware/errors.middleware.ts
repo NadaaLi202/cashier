@@ -1,17 +1,30 @@
-import express, { Request, Response, NextFunction } from 'express';
-import ApiError from '../utils/apiErrors';
+import { Request, Response, NextFunction } from 'express';
+import { ZodError } from 'zod';
+
 
 const devErrors = (err: any, res: Response) => {
-    res.status(err.statusCode).json({
+    if (err instanceof ZodError) {
+        return res.status(400).json({
+            message: 'البيانات المدخلة غير صحيحة',
+            success: false,
+            errors: err.issues.map((issue) => ({
+                field: issue.path.join('.'),
+                message: issue.message,
+            })),
+        });
+    }
+    
+    return res.status(err.statusCode).json({
         status: err.status,
         error: err,
         message: err.message,
+        success: false,
         stack: err.stack
     });
 };
 
 const prodErrors = (err: any, res: Response) => {
-    res.status(err.statusCode).json({
+    return res.status(err.statusCode).json({
         status: err.status,
         message: err.message
     });

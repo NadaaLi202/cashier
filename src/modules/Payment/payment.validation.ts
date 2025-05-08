@@ -5,9 +5,11 @@ import { PaymentMethod } from "./payment.types";
 
 export const createPaymentSchema = z.object({
     orderId: z.string().regex(MONGODBObjectId, 'invalid order id'),
-    amount: z.number().min(0),
-    discount: z.number().min(1).max(20, 'discount must be between 1% and 20%').optional(),
-    paymentMethod: z.nativeEnum(PaymentMethod),
+    paymentMethods: z.array(z.object({
+        method: z.nativeEnum(PaymentMethod),
+        amount: z.number().min(0),
+    })),
+    discount: z.number().min(0).max(20).int().optional(),
 })
 
 export const getAllPaymentsSchema = z.object({

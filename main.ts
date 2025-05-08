@@ -67,6 +67,9 @@ server = app.listen(process.env.PORT, ()  => {
 })
 
     process.on('unhandledRejection', (err : Error)  => {
+    if (process.env.NODE_ENV === 'development') { 
+      console.log(err);
+    }
     console.log  (`unhandledRejection ${err.name} | ${err.message}`);
     server.close(()  => {
         

@@ -10,36 +10,42 @@ class PaymentService {
 
     async createPayment(data: ICreatePayment) {
         try {
-            const { orderId, amount, discount, paymentMethod } = data;
+            const { orderId, discount, paymentMethods } = data;
             
             // check if order exists and avalible
             const order = await orderService.isOrderExist(orderId);
             if (!order) {
                 throw new ApiError('Order not found', 404);
             }
-            if(order.status === OrderStatus.COMPLETED) {
-                throw new ApiError('Order is already completed', 400);
-            }
             if(order.status === OrderStatus.CANCELLED) {
                 throw new ApiError('Order is cancelled', 400);
             }
+            if (order.status !== OrderStatus.COMPLETED) {
+                throw new ApiError('Order is not completed yet', 400);
+            }
+            if (order.isPaid) {
+                throw new ApiError('Order is already paid', 400);
+            }
 
             // check if discount is valid
-            const updatedOrderData: Partial<IOrder> = {};
+            const orderTotalAmount = order.totalPrice;
+            let expectedValue = orderTotalAmount;
+            const totalAmount = paymentMethods.reduce((acc, curr) => acc + curr.amount, 0);
             if (discount) {
-                const expectedValue = order.totalPrice - ((order.totalPrice * discount) / 100);
-                if (expectedValue > amount) {
+                if (discount > orderTotalAmount) {
                     throw new ApiError('Discount is greater than amount', 400);
                 }
-                updatedOrderData.discount = discount;
+                expectedValue -= ((orderTotalAmount * discount) / 100);
             }
-            updatedOrderData.status = OrderStatus.COMPLETED;
 
-            const payment = await this.paymentDataSource.createOne(data);
+            // check if total amount is correct
+            if (expectedValue != totalAmount) {
+                throw new ApiError('total amount is not correct', 400);
+            }
             
-            const updatedOrder = await orderService.updateOrder({ orderId, data: updatedOrderData });
-            
-            const updateTable = await tableService.updateTable({ tableNumber: order.tableNumber, data: { isAvailable: true } });
+            const payment = await this.paymentDataSource.createOne({ ...data, totalAmount });
+            await orderService.updateOrder({ orderId, data: { isPaid: true } });
+            await tableService.updateTable({ tableNumber: order.tableNumber, data: { isAvailable: true } });
             
             // Print reset for payment
             
@@ -59,7 +65,7 @@ class PaymentService {
         try {
             let query: any = {};
             if(paymentMethod) {
-                query.paymentMethod = paymentMethod;
+                query.paymentMethods = { $elemMatch: { method: paymentMethod } };
             }
             if(date) {
                 query.createdAt = { $gte: date };

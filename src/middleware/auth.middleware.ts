@@ -37,9 +37,9 @@ export const isAuthunticated = (allowedRoles: UserRoles[] = []) => {
                 return next(new ApiError('Unauthorized - Not have access to this', 401));
             }
 
-            req.user = { userId, role };
-           
-            next();
+            req.user = { userId, role };          
+            
+            return next();
         },
     );
 }
