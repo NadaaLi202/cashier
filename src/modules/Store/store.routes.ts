@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 import ApiError from "../../utils/apiErrors";
 import { z } from "zod";
 import { addStoreSchema, updateStoreSchema } from "./store.validation";
-import authService from "../Auth/auth.service";
+import authService from "../AuthI/auth.service";
 
 
 

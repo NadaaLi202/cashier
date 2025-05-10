@@ -3,7 +3,7 @@ import globalErrorHandler from "./middleware/errors.middleware";
 import ApiError from "./utils/apiErrors";
 
 import userRouter from "./modules/User/users.route";
-import authRouter from "./modules/Auth/auth.router";
+import authRouter from "./modules/AuthI/auth.router";
 import departmentRouter from "./modules/Department/department.route";
 import mealsRouter from "./modules/Meal/meal.route";
 import { UserRoles } from "./modules/User/users.interface";
