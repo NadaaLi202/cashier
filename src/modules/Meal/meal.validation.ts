@@ -1,23 +1,29 @@
 import { body, param } from "express-validator";
-import validatorMiddleware from "../middleware/validator.middleware";
+import validatorMiddleware from "../../middleware/validator.middleware";
 import mealSchema from "./meal.schema";
-
 
 class MealsValidation {
 
     createOne = [
-        body('name').notEmpty().withMessage((val, {req}) => req.__('validation_field'))
-        .isLength({min : 2, max : 50}).withMessage('name must be at least 3 characters long')
+        body('name').notEmpty().withMessage('name is required')
+        .isLength({min : 3, max : 50}).withMessage('name must be at least 3 characters long')
         .custom(async( val: string, {req}) => {
 
         const meal = await  mealSchema.findOne({name : val});
         if(meal) throw new Error(`${req.__('not_found')}`);
         return true;
+<<<<<<< HEAD:src/Meal/meal.validation.ts
     }).trim(),
 
      body('description').notEmpty().withMessage((val, {req}) => req.__('validation_field'))
         .isLength({min : 2, max : 500}).withMessage('description must be at least 3 characters long').trim(),
          validatorMiddleware ]
+=======
+    }),
+     body('description').optional()
+        .isLength({min : 3, max : 500}).withMessage('description must be at least 3 characters long')
+    , validatorMiddleware ]
+>>>>>>> new-features:src/modules/Meal/meal.validation.ts
 
     updateOne =  [
         param('id').isMongoId().withMessage((val, {req}) => req.__('invalid_id')),
@@ -36,7 +42,8 @@ class MealsValidation {
 
     deleteOne =  [
         param('id').isMongoId().withMessage((val, {req}) => req.__('invalid_id')),
-   validatorMiddleware ]
+        validatorMiddleware 
+    ]
 }
 
 const mealsValidation = new MealsValidation();

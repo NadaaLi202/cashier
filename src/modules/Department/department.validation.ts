@@ -1,26 +1,26 @@
 import { body, param } from "express-validator";
 import departmentSchema from "./department.schema";
-import validatorMiddleware from "../middleware/validator.middleware";
-import { describe } from "node:test";
+import validatorMiddleware from "../../middleware/validator.middleware";
 
 
 class DepartmentsValidation {
 
     createOne = [
-        body('name').notEmpty().withMessage((val, {req}) => req.__('validation_field'))
-        .isLength({min : 2, max : 50}).withMessage('name must be at least 3 characters long')
+        body('name').notEmpty().withMessage('name is required')
+        .isLength({min : 2, max : 50}).withMessage('name must be at least 2 characters long')
         .custom(async( val: string, {req}) => {
 
         const department = await  departmentSchema.findOne({name : val});
         if(department) throw new Error(`${req.__('not_found')}`);
         return true;
     }),
-     body('description').notEmpty().withMessage((val, {req}) => req.__('validation_field'))
-        .isLength({min : 2, max : 500}).withMessage('description must be at least 3 characters long')
+     body('description').optional()
+        .isLength({min : 2, max : 500})
+        .withMessage('description must be at least 3 characters long')
     , validatorMiddleware ]
 
     updateOne =  [
-        param('id').isMongoId().withMessage((val, {req}) => req.__('invalid_id')),
+        param('id').isMongoId().withMessage('Invalid id'),
         body('name').optional()
         .isLength({min : 2, max : 50}).withMessage('name must be at least 2 characters long')
         .custom(async( val: string, {req}) => {
@@ -31,11 +31,11 @@ class DepartmentsValidation {
     }), validatorMiddleware ]
 
     getOne = [
-        param('id').isMongoId().withMessage((val, {req}) => req.__('invalid_id')),
+        param('id').isMongoId().withMessage('Invalid id'),
         validatorMiddleware]
 
     deleteOne =  [
-        param('id').isMongoId().withMessage((val, {req}) => req.__('invalid_id')),
+        param('id').isMongoId().withMessage('Invalid id'),
    validatorMiddleware ]
 }
 
