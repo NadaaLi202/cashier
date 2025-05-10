@@ -11,8 +11,8 @@ const departmentRouter : Router =  Router();
 
 departmentRouter.get('/',departmentService.getAllDepartments)
 departmentRouter.get('/:id',departmentsValidation.getOne,departmentService.getDepartmentById);
-departmentRouter.post('/',departmentsValidation.createOne,departmentService.createDepartment);
-departmentRouter.put('/:id', departmentsValidation.updateOne ,departmentService.updateDepartment);
+departmentRouter.post('/',departmentService.uploadImage,departmentService.saveImage,departmentsValidation.createOne,departmentService.createDepartment);
+departmentRouter.put('/:id',departmentService.uploadImage,departmentService.saveImage, departmentsValidation.updateOne ,departmentService.updateDepartment);
 departmentRouter.delete('/:id',departmentsValidation.deleteOne,departmentService.deleteDepartment);
 
 

@@ -9,6 +9,7 @@ export  interface Department  extends Document {
     image : string;
     readonly isActive : boolean;
     userId : Schema.Types.ObjectId;
-    
+    category : Category;
 
 }
+type Category = 'breakfast' | 'lunch' | 'dinner' | 'drinks' | 'desserts' | 'juices';

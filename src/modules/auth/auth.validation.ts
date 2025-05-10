@@ -1,6 +1,11 @@
 import {body} from "express-validator";
+<<<<<<< HEAD:src/modules/auth/auth.validation.ts
 import usersSchema from "../users/users.schema";
 import validatorMiddleware from "../../middleware/validator.middleware";
+=======
+import usersSchema from "../User/users.schema";
+import validatorMiddleware from "../middleware/validator.middleware";
+>>>>>>> bb070fa2c2a2a21f932b481d96518464745020fe:src/auth/auth.validation.ts
 
 class AuthValidation {
 

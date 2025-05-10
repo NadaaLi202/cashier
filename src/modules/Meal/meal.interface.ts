@@ -12,9 +12,12 @@ export interface Meal extends IDBModel {
     departmentId : string;
     ingredients : string;
     price : number;
+<<<<<<< HEAD:src/modules/Meal/meal.interface.ts
     category : Category;
     isAvailable : boolean;
+=======
+    numberOfMeals : number
+>>>>>>> bb070fa2c2a2a21f932b481d96518464745020fe:src/Meal/meal.interface.ts
 }
 
 
-type Category = 'breakfast' | 'lunch' | 'dinner' | 'drinks' | 'snacks';

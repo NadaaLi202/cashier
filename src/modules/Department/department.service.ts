@@ -2,7 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import { Department } from "./department.interface";
 import departmentSchema from "./department.schema";
+<<<<<<< HEAD:src/modules/Department/department.service.ts
 import ApiError from "../../utils/apiErrors";
+=======
+import ApiError from "../utils/apiErrors";
+import { uploadSingleFile } from "../middleware/uploadFiles.middleware";
+import sharp from "sharp";
+>>>>>>> bb070fa2c2a2a21f932b481d96518464745020fe:src/Department/department.service.ts
 
 
 
@@ -60,7 +66,24 @@ class DepartmentsService {
     })
 
 
-}
+
+     uploadImage = uploadSingleFile(['image'], 'image');
+    saveImage = async (req: Request, res: Response, next: NextFunction) => {
+        
+        if (req.file) {
+            const fileName = `departments.${Date.now()}-image.webp`;
+            await sharp(req.file.buffer)
+            .resize(1200, 1200)
+            .webp({quality: 95})
+            .toFile(`uploads/images/department/${fileName}`);
+            req.body.image = fileName;
+    }
+    next()
+        }
+
+    }
+
+
 const departmentService = new DepartmentsService();
 
 export default departmentService

@@ -1,8 +1,13 @@
 import expressAsyncHandler from "express-async-handler";
 import { Request, Response, NextFunction } from "express";
 import crypto from "crypto";
+<<<<<<< HEAD:src/modules/auth/auth.service.ts
 import usersSchema from "../users/users.schema";
 import ApiError from "../../utils/apiErrors";
+=======
+import usersSchema from "../User/users.schema";
+import ApiError from "../utils/apiErrors";
+>>>>>>> bb070fa2c2a2a21f932b481d96518464745020fe:src/auth/auth.service.ts
 import bcrypt from "bcryptjs";
 import createTokens from "../../utils/token";
 import sanitization from "../../utils/sanitization";
@@ -140,28 +145,6 @@ protectedRoutes = expressAsyncHandler(async (req: Request, res: Response, next: 
     next();
 });
 
-
-//    protectedRoutes = expressAsyncHandler(async(req:Request, res:Response, next:NextFunction) => {
-
-//     let token: string = '';
-
-//     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer '))
-//         token = req.headers.authorization.split(' ')[1];
-
-//     else return next(new ApiError(`${req.__('check_login')}`, 401));
-
-//     const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
-//     const user = await usersSchema.findById(decoded.id);
-//     if(!user) return next(new ApiError(`${req.__('check_login')}`, 404));
-
-//     if (user.passwordChangedAt instanceof Date){
-//         const  changePasswordTime = Math.trunc(user.passwordChangedAt.getTime() / 1000);
-//         if(changePasswordTime > decoded.iat) return next(new ApiError(`${req.__('check_password_changed')}`, 401));
-//     }
-//     req.user = user;
-//     next();
-
-// });
 
 
 
