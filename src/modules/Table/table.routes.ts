@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { isAuthunticated } from "../../middleware/auth.middleware";
-import { UserRoles } from "../users/users.interface";
+import { UserRoles } from "../User/users.interface";
 import { tableCtrl } from "./table.controller";
 import asyncHandler from "express-async-handler";
 

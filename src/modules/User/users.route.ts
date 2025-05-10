@@ -1,7 +1,7 @@
 import  { Router } from "express";
 import usersService from "./users.service";
 import usersValidation from "./user.validation";
-import authService from "../auth/auth.service";
+import authService from "../Auth/auth.service";
 
 const userRouter : Router =  Router();
 

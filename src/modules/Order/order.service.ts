@@ -4,7 +4,7 @@ import { orderRepository } from "./order.repository";
 import { ICreateOrder, IOrder, IOrderMealItem, OrderMealStatus, OrderStatus } from "./order.types";
 import { tableService } from "../Table";
 import Meal from "../Meal/meal.schema";
-import { subOrderService } from "../subOrders";
+import { subOrderService } from "../subOrder";
 
 class OrderService {
 

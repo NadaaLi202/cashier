@@ -1,6 +1,6 @@
 
 
-import { Document , Schema } from "mongoose";
+import { Document ,  Types } from "mongoose";
 
 export  interface Department  extends Document {
 
@@ -8,7 +8,7 @@ export  interface Department  extends Document {
     description : string;
     image : string;
     readonly isActive : boolean;
-    userId : Schema.Types.ObjectId;
+    userId : Types.ObjectId;
     
 
 }

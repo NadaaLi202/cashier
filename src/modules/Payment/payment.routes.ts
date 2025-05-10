@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { UserRoles } from "../users/users.interface";
+import { UserRoles } from "../User/users.interface";
 import { isAuthunticated } from "../../middleware/auth.middleware";
 import { paymentCtrl } from "./payment.controller";
 import asyncHandler from "express-async-handler";

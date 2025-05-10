@@ -2,7 +2,7 @@ import { Router } from "express";
 import { orderCtrl } from "./odrer.controller";
 import { isAuthunticated } from "../../middleware/auth.middleware";
 import asyncHandler from 'express-async-handler'
-import { UserRoles } from "../users/users.interface";
+import { UserRoles } from "../User/users.interface";
 
 const router = Router();
 

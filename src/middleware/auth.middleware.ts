@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { UserRoles } from '../modules/users/users.interface';
+import { UserRoles } from '../modules/User/users.interface';
 import asyncHandler from 'express-async-handler';
 import ApiError from '../utils/apiErrors';
 import { verify } from 'jsonwebtoken';
