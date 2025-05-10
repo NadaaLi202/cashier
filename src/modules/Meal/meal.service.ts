@@ -3,7 +3,8 @@ import expressAsyncHandler from "express-async-handler";
 import ApiError from "../../utils/apiErrors";
 import { Meal } from "./meal.interface";
 import mealSchema from "./meal.schema";
-
+import { uploadSingleFile } from "../../middleware/uploadFiles.middleware";
+import sharp from "sharp";
 
 
 
@@ -59,6 +60,20 @@ class MealsService {
         res.status(200).json({message: "Meal deleted successfully",data: meal});
     })
 
+
+    uploadImage = uploadSingleFile(['image'], 'image');
+    saveImage = async (req: Request, res: Response, next: NextFunction) => {
+        
+        if (req.file) {
+            const fileName = `meals.${Date.now()}-image.webp`;
+            await sharp(req.file.buffer)
+            .resize(1200, 1200)
+            .webp({quality: 95})
+            .toFile(`uploads/images/meal/${fileName}`);
+            req.body.image = fileName;
+    }
+    next()
+        }
 
 
 }

@@ -9,6 +9,4 @@ export  interface Department  extends Document {
     image : string;
     readonly isActive : boolean;
     userId : Types.ObjectId;
-    
-
 }
