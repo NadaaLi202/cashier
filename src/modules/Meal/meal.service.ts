@@ -3,14 +3,8 @@ import expressAsyncHandler from "express-async-handler";
 import ApiError from "../../utils/apiErrors";
 import { Meal } from "./meal.interface";
 import mealSchema from "./meal.schema";
-<<<<<<< HEAD:src/Meal/meal.service.ts
-import { uploadSingleFile } from "../middleware/uploadFiles.middleware";
-import sharp from "sharp";
-
-=======
 import { uploadSingleFile } from "../../middleware/uploadFiles.middleware";
 import sharp from "sharp";
->>>>>>> new-features:src/modules/Meal/meal.service.ts
 
 
 
@@ -70,7 +64,6 @@ class MealsService {
     })
 
 
-<<<<<<< HEAD:src/Meal/meal.service.ts
      uploadImage = uploadSingleFile(['image'], 'image');
         saveImage = async (req: Request, res: Response, next: NextFunction) => {
             
@@ -84,24 +77,11 @@ class MealsService {
         }
         next()
             }
-=======
-    uploadImage = uploadSingleFile(['image'], 'image');
-    saveImage = async (req: Request, res: Response, next: NextFunction) => {
-        
-        if (req.file) {
-            const fileName = `meals.${Date.now()}-image.webp`;
-            await sharp(req.file.buffer)
-            .resize(1200, 1200)
-            .webp({quality: 95})
-            .toFile(`uploads/images/meal/${fileName}`);
-            req.body.image = fileName;
-    }
-    next()
+
         }
->>>>>>> new-features:src/modules/Meal/meal.service.ts
 
 
-}
+
 const mealsService = new MealsService();
 
 export default mealsService

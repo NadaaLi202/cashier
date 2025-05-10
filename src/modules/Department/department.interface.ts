@@ -8,13 +8,9 @@ export  interface Department  extends Document {
     description : string;
     image : string;
     readonly isActive : boolean;
-<<<<<<< HEAD:src/Department/department.interface.ts
-    userId : Schema.Types.ObjectId;
+    userId : Types.ObjectId;
     category : Category;
 
 }
 type Category = 'breakfast' | 'lunch' | 'dinner' | 'drinks' | 'desserts' | 'juices';
-=======
-    userId : Types.ObjectId;
-}
->>>>>>> new-features:src/modules/Department/department.interface.ts
+

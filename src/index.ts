@@ -1,13 +1,7 @@
 import express, { Application } from "express";
 import globalErrorHandler from "./middleware/errors.middleware";
 import ApiError from "./utils/apiErrors";
-<<<<<<< HEAD
-import userRouter from "./User/users.route";
-import authRouter from "./auth/auth.router";
-import departmentRouter from "./Department/department.route";
-import mealsRouter from "./Meal/meal.route";
 
-=======
 import userRouter from "./modules/User/users.route";
 import authRouter from "./modules/Auth/auth.router";
 import departmentRouter from "./modules/Department/department.route";
@@ -17,7 +11,6 @@ import { ordrRouter } from "./modules/Order";
 import { tableRoutes } from "./modules/Table";
 import { paymentRouter } from "./modules/Payment";
 import storeRouter from "./modules/Store/store.routes";
->>>>>>> new-features
 
 declare module "express" {
 

@@ -2,14 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import { Department } from "./department.interface";
 import departmentSchema from "./department.schema";
-<<<<<<< HEAD:src/Department/department.service.ts
-import ApiError from "../utils/apiErrors";
-import { uploadSingleFile } from "../middleware/uploadFiles.middleware";
-=======
+import sharp from "sharp";
 import ApiError from "../../utils/apiErrors";
 import { uploadSingleFile } from "../../middleware/uploadFiles.middleware";
->>>>>>> new-features:src/modules/Department/department.service.ts
-import sharp from "sharp";
 
 
 
@@ -68,12 +63,9 @@ class DepartmentsService {
 
 
 
-<<<<<<< HEAD:src/Department/department.service.ts
-     uploadImage = uploadSingleFile(['image'], 'image');
-=======
+
 
     uploadImage = uploadSingleFile(['image'], 'image');
->>>>>>> new-features:src/modules/Department/department.service.ts
     saveImage = async (req: Request, res: Response, next: NextFunction) => {
         
         if (req.file) {
@@ -86,14 +78,9 @@ class DepartmentsService {
     }
     next()
         }
-<<<<<<< HEAD:src/Department/department.service.ts
 
     }
 
-
-=======
-}
->>>>>>> new-features:src/modules/Department/department.service.ts
 const departmentService = new DepartmentsService();
 
 export default departmentService

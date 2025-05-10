@@ -1,10 +1,7 @@
 import {body} from "express-validator";
 import usersSchema from "../User/users.schema";
-<<<<<<< HEAD:src/auth/auth.validation.ts
-import validatorMiddleware from "../middleware/validator.middleware";
-=======
+
 import validatorMiddleware from "../../middleware/validator.middleware";
->>>>>>> new-features:src/modules/auth/auth.validation.ts
 
 class AuthValidation {
 

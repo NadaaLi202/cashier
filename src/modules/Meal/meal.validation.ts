@@ -12,18 +12,11 @@ class MealsValidation {
         const meal = await  mealSchema.findOne({name : val});
         if(meal) throw new Error(`${req.__('not_found')}`);
         return true;
-<<<<<<< HEAD:src/Meal/meal.validation.ts
-    }).trim(),
-
-     body('description').notEmpty().withMessage((val, {req}) => req.__('validation_field'))
-        .isLength({min : 2, max : 500}).withMessage('description must be at least 3 characters long').trim(),
-         validatorMiddleware ]
-=======
     }),
+
      body('description').optional()
         .isLength({min : 3, max : 500}).withMessage('description must be at least 3 characters long')
     , validatorMiddleware ]
->>>>>>> new-features:src/modules/Meal/meal.validation.ts
 
     updateOne =  [
         param('id').isMongoId().withMessage((val, {req}) => req.__('invalid_id')),
