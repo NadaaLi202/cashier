@@ -5,6 +5,8 @@ import ApiError from "../../utils/apiErrors";
 import { z } from "zod";
 import { addStoreSchema, updateStoreSchema } from "./store.validation";
 import authService from "../AuthI/auth.service";
+import { isAuthunticated } from "../../middleware/auth.middleware";
+import { UserRoles } from "../User/users.interface";
 
 
 
@@ -24,11 +26,11 @@ const validate = (schema: z.ZodTypeAny) => async(req: Request, res: Response, ne
 
 const storeRouter : Router =  Router();
 
-storeRouter.get('/',authService.protectedRoutes,authService.allowedTo('manager'),storeService.getAllStores);
-storeRouter.get('/:id',authService.protectedRoutes,authService.allowedTo('manager'),storeService.getStoreById);
-storeRouter.post('/',authService.protectedRoutes,authService.allowedTo('manager'),validate(addStoreSchema),storeService.addStore);
-storeRouter.put('/:id',authService.protectedRoutes,authService.allowedTo('manager'),validate(updateStoreSchema),storeService.updateStore);
-storeRouter.delete('/:id',authService.protectedRoutes,authService.allowedTo('manager'),storeService.deleteStore);   
+storeRouter.get('/',isAuthunticated([UserRoles.MANAGER]),storeService.getAllStores);
+storeRouter.get('/:id',isAuthunticated([UserRoles.MANAGER]),storeService.getStoreById);
+storeRouter.post('/',isAuthunticated([UserRoles.MANAGER]),validate(addStoreSchema),storeService.addStore);
+storeRouter.put('/:id',isAuthunticated([UserRoles.MANAGER]),validate(updateStoreSchema),storeService.updateStore);
+storeRouter.delete('/:id',isAuthunticated([UserRoles.MANAGER]),storeService.deleteStore);   
 
 
 export default storeRouter;
