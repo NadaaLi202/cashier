@@ -18,14 +18,15 @@ import ApiError from './src/utils/apiErrors';
 const app: express.Application = express();
 
 app.use(cors({
-  origin: (origin, callback) => {
-    const allowedOrigins = ['*'];
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new ApiError('Not allowed by CORS', 403));
-    }
-  },
+  // origin: (origin, callback) => {
+  //   const allowedOrigins = ['*'];
+  //   if (!origin || allowedOrigins.includes(origin)) {
+  //     callback(null, true);
+  //   } else {
+  //     callback(new ApiError('Not allowed by CORS', 403));
+  //   }
+  // },
+  origin: '*',
   allowedHeaders: ['Content-Type', 'Authorization','X-CSRF-Token'],
   methods : ['GET', 'POST', 'PUT', 'DELETE','OPTIONS'],
   credentials : true 
