@@ -13,19 +13,26 @@ import expressMongoSanitize from 'express-mongo-sanitize';
 import helmet from 'helmet';
 import csrf from 'csurf'
 import morgan from 'morgan';
+import ApiError from './src/utils/apiErrors';
 
 const app: express.Application = express();
 
 app.use(cors({
-  origin : ['http://localhost:3000'], // domain frontend
+  origin: (origin, callback) => {
+    const allowedOrigins = ['*'];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new ApiError('Not allowed by CORS', 403));
+    }
+  },
   allowedHeaders: ['Content-Type', 'Authorization','X-CSRF-Token'],
   methods : ['GET', 'POST', 'PUT', 'DELETE','OPTIONS'],
   credentials : true 
- 
 }));
 
 app.use(express.json({ limit : '10kb' }));
-app.use(expressMongoSanitize()) // لازم في الاول 
+app.use(expressMongoSanitize())
 app.use(helmet({crossOriginResourcePolicy : {policy: 'same-site'}}));
 app.use(cookieParser());
 app.use(compression());
@@ -58,23 +65,19 @@ app.get('/', function (req : express.Request, res: express.Response) : void {
   res.send('Hello World !!')
 })
 
-
-// app.get('/',categoriesService.getAllCategories);
-
 server = app.listen(process.env.PORT, ()  => {
-    console.log(`Server running on port ${process.env.PORT} `);
-
+  console.log(`Server running on port ${process.env.PORT} `);
 })
 
-    process.on('unhandledRejection', (err : Error)  => {
-    if (process.env.NODE_ENV === 'development') { 
-      console.log(err);
-    }
-    console.log  (`unhandledRejection ${err.name} | ${err.message}`);
-    server.close(()  => {
-        
-        console.log('shutting down the server ');
-        process.exit(1);
-    
-    })
+process.on('unhandledRejection', (err : Error)  => {
+  if (process.env.NODE_ENV === 'development') { 
+    console.log(err);
+  }
+  console.log  (`unhandledRejection ${err.name} | ${err.message}`);
+  server.close(()  => {
+      
+      console.log('shutting down the server ');
+      process.exit(1);
+  
   })
+})
