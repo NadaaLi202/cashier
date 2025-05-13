@@ -12,13 +12,13 @@ export interface Meal extends Document {
     departmentId : Types.ObjectId;
     ingredients : string;
     price : number;
-    numberOfMeals : number
-    category : Category;
+    numberOfMeals : number;
+    category : string;
     isAvailable : boolean;
 
 }
 
-type Category = 'breakfast' | 'lunch' | 'dinner' | 'drinks' | 'desserts' | 'juices';
+// type Category = 'breakfast' | 'lunch' | 'dinner' | 'drinks' | 'desserts' | 'juices';
 
 
 

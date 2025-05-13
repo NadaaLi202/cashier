@@ -12,7 +12,7 @@ const mealSchema = new mongoose.Schema({
     departmentId : {type : mongoose.Schema.Types.ObjectId, ref : 'Departments' , required : true},
     ingredients : {type : String },
     price : {type : Number , required : true},
-    category : {type : String, enum : ['breakfast', 'lunch', 'dinner', 'drinks','snacks'] , required : true},
+    category : {type : String, required : true},
     isAvailable : {type: Boolean, default: "true"}
 },{timestamps : true})
 
