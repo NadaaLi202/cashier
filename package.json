@@ -1,7 +1,7 @@
 {
   "name": "cashier-app",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.js", 
   "scripts": {
     "dev": "nodemon main.ts",
     "start": "set NODE_ENV=production && node ./dist/main.js",
