@@ -39,24 +39,26 @@ class UsersService {
 
     });
 
-    // uploadImage = uploadSingleFile(['image'], 'image'); // type , fieldName
-    // saveImage = async(req:Request,res: Response, next: NextFunction) => {
-        
-    //     if(req.file) {
-    //         const fileName = `users.${Date.now()}-image.webp`;
-    //         await sharp(req.file.buffer)
-    //             .resize(1200, 1200)
-    //             .webp({quality: 95})
-    //             .toFile(`uploads/images/users/${fileName}`);
-    //             req.body.image = fileName;
-    //     }
-    //     next()
-    // }
-
-
 
     deleteUser = refactorService.deleteOne<Users>(usersSchema);
-}  
+
+
+     uploadImage = uploadSingleFile(['image'], 'image');
+            saveImage = async (req: Request, res: Response, next: NextFunction) => {
+                
+                if (req.file) {
+                    const fileName = `users.${Date.now()}-image.webp`;
+                    await sharp(req.file.buffer)
+                    .resize(1200, 1200)
+                    .webp({quality: 95})
+                    .toFile(`uploads/images/user/${fileName}`);
+                    req.body.image = fileName;
+            }
+            next()
+                }
+    
+            }
+
 
 const usersService = new UsersService();
 export default usersService;
