@@ -27,7 +27,7 @@ export interface ICreateOrder {
 }
 
 export interface IOrderMealItem {
-    departmentId: string;
+    kitchenId: string;
     mealId: string;
     quantity: number;
     price: number;

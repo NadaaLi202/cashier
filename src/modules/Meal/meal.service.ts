@@ -20,7 +20,7 @@ class MealsService {
         if(!meal) {
             return next(new ApiError(`${req.__('not_found')}`,404));
         }
-        await meal.populate([{path : 'managerId',select : 'name'},{path : 'departmentId',select : 'name'}]);
+        await meal.populate([{path : 'managerId',select : 'name'},{path : 'kitchenId',select : 'name'}]);
         // console.log(meal);
         res.status(201).json({message:"Meal created successfully",data: meal});
     })

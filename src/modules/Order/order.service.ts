@@ -5,7 +5,7 @@ import { ICreateOrder, IOrder, IOrderMealItem, OrderMealStatus, OrderStatus } fr
 import { tableService } from "../Table";
 import Meal from "../Meal/meal.schema";
 import { subOrderService } from "../subOrder";
-
+import stockSchema from "../Stock/stock.schema";
 class OrderService {
 
     constructor(private readonly orderdDataSource = orderRepository) {}
@@ -46,7 +46,7 @@ class OrderService {
                 const meal = await Meal.findById(item.mealId);
                 // if (!meal || !meal?.isAvailable) {
                 if(!meal) {
-                    throw new ApiError('Meal not availble now', 404);
+                    throw new ApiError('Meal not available now', 404);
                 }
                 
                 // console.log(meal)
@@ -57,7 +57,7 @@ class OrderService {
                 subtotalPrice += meal.price * item.quantity;
                 newOrderItems.push({
                     mealId: item.mealId,
-                    departmentId: mealObj.departmentId.toString(),
+                    kitchenId: mealObj.kitchenId.toString(),
                     quantity: item.quantity,
                     price: mealObj.price,
                     status: OrderMealStatus.PENDING
@@ -91,14 +91,14 @@ class OrderService {
             const meal = await Meal.findById(orderItem.mealId);
             // if (!meal || !meal?.isAvailable) {
             if(!meal) {
-                throw new ApiError('Meal not availble now', 404);
+                throw new ApiError('Meal not available now', 404);
             }
             const mealObj = meal.toObject();
             //! Update order items if meal is already in order
             orderItems = orderItems.filter(item => item.mealId.toString() !== orderItem.mealId.toString());
             orderItems.push({
                 mealId: orderItem.mealId,
-                departmentId: mealObj.departmentId.toString(),
+                kitchenId: mealObj.kitchenId.toString(),
                 quantity: orderItem.quantity,
                 price: meal.price,
                 status: OrderMealStatus.PENDING
@@ -222,21 +222,44 @@ class OrderService {
         }
     }
 
+    // async completeOrder(orderId: string) {
+    //     try {
+    //         const order = await this.isOrderExist(orderId);
+    //         if(order.status === OrderStatus.CANCELLED) {
+    //             throw new ApiError('Order is already cancelled', 400);
+    //         }
+    //         if(order.status === OrderStatus.COMPLETED) {
+    //             throw new ApiError('Order is already completed', 400);
+    //         }
+    //         return this.orderdDataSource.updateOne({ _id: orderId }, { status: OrderStatus.COMPLETED });
+    //     } catch (error) {
+    //         if(error instanceof ApiError) throw error
+    //         throw new ApiError('Failed to complete order', 500);
+    //     }
+    // }
+
+
     async completeOrder(orderId: string) {
         try {
-            const order = await this.isOrderExist(orderId);
-            if(order.status === OrderStatus.CANCELLED) {
-                throw new ApiError('Order is already cancelled', 400);
-            }
-            if(order.status === OrderStatus.COMPLETED) {
-                throw new ApiError('Order is already completed', 400);
-            }
-            return this.orderdDataSource.updateOne({ _id: orderId }, { status: OrderStatus.COMPLETED });
+          const order = await this.isOrderExist(orderId);
+          if (order.status === OrderStatus.CANCELLED) {
+            throw new ApiError('Order is already cancelled', 400);
+          }
+          if (order.status === OrderStatus.COMPLETED) {
+            throw new ApiError('Order is already completed', 400);
+          }
+      
+          await this.orderdDataSource.updateOne({ _id: orderId }, { status: OrderStatus.COMPLETED });
+      
+          // خصم الكميات من المخزون
+          await this.deductStockForOrder(orderId);
+      
+          return { message: 'Order completed and stock updated' };
         } catch (error) {
-            if(error instanceof ApiError) throw error
-            throw new ApiError('Failed to complete order', 500);
+          if (error instanceof ApiError) throw error;
+          throw new ApiError('Failed to complete order', 500);
         }
-    }
+      }
 
     async sendOrderForDepartments(order: IOrder) {
         // console.log(order);
@@ -250,6 +273,55 @@ class OrderService {
             throw new ApiError('Failed to send order for departments', 500);
         }
     }
+
+
+
+    async deductStockForOrder(orderId: string) {
+        try {
+            const order = await this.isOrderExist(orderId);
+            if (order.status !== OrderStatus.COMPLETED) {
+                throw new ApiError('Only completed orders can update stock', 400);
+            }
+    
+            const stockUsageMap = new Map<string, number>();
+    
+            for (const item of order.orderItems) {
+                const meal = await Meal.findById(item.mealId).populate('ingredients.stockItemId');
+                if (!meal) continue;
+    
+                const mealQty = item.quantity;
+    
+                for (const ingredient of meal.ingredients) {
+                    const stockId = ingredient.stockItemId._id.toString();
+                    const usedQty = ingredient.quantityUsed * mealQty;
+    
+                    const stockUsage = stockUsageMap.get(stockId) || 0;
+                    stockUsageMap.set(stockId, stockUsage + usedQty);
+                }
+            }
+    
+            // تحديث المخزون 
+            for (const [stockId, totalUsed] of stockUsageMap.entries()) {
+                const stockItem = await stockSchema.findById(stockId);
+                if (!stockItem) continue;
+    
+                if (stockItem.quantity < totalUsed) {
+                    throw new ApiError(`Insufficient stock for ${stockItem.nameOfItem}`, 400);
+                }
+                stockItem.quantity -= totalUsed;
+                await stockItem.save();
+            }
+    
+            return {
+                success: true,
+                message: 'Stock updated successfully'
+            };
+        } catch (error) {
+            if (error instanceof ApiError) throw error;
+            throw new ApiError('Failed to update stock', 500);
+        }
+    }
+    
 }
 
 export const orderService = new OrderService() 

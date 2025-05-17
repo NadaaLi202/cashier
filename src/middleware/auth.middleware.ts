@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from 'express';
 import { UserRoles } from '../modules/User/users.interface';
 import asyncHandler from 'express-async-handler';
 import ApiError from '../utils/apiErrors';
-import { verify } from 'jsonwebtoken';
 
 export interface AuthRequest extends Request {
   user?: {
@@ -16,7 +15,7 @@ export interface IJwtPayload {
     role: UserRoles;
 }
 
-export const isAuthunticated = (allowedRoles: UserRoles[] = []) => {
+export const isAuthenticated = (allowedRoles: UserRoles[] = []) => {
     return asyncHandler(
         async (req: AuthRequest, _res: Response, next: NextFunction) => {
             // const authHeader = req.headers.authorization;

@@ -9,8 +9,22 @@ const mealSchema = new mongoose.Schema({
     description : {type : String , default : ''}, 
     image : { type : String ,default : ''}, //
     managerId : {type : mongoose.Schema.Types.ObjectId, ref : 'Users' , required : true},
-    departmentId : {type : mongoose.Schema.Types.ObjectId, ref : 'Departments' , required : true},
-    ingredients : {type : String },
+    kitchenId : {type : mongoose.Schema.Types.ObjectId, ref : 'Kitchens' , required : true},
+    ingredients : [
+        {
+            stockItemId:
+            { 
+                type : mongoose.Schema.Types.ObjectId,
+                ref : 'Stock',
+                required : true
+            },
+            quantityUsed: 
+            {
+                type : Number,
+                required : true
+            }
+        }
+    ],
     price : {type : Number , required : true},
     category : {type : String, required : true},
     isAvailable : {type: Boolean, default: "true"}

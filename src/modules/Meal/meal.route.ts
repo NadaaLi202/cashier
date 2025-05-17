@@ -3,7 +3,7 @@ import { Router } from "express";
 import mealsValidation from "./meal.validation";
 import mealsService from "./meal.service";
 import { UserRoles } from "../User/users.interface";
-import { isAuthunticated } from "../../middleware/auth.middleware";
+import { isAuthenticated} from "../../middleware/auth.middleware";
 
 
 
@@ -15,15 +15,15 @@ mealRouter.get('/',mealsService.getAllMeals);
 
 mealRouter.get('/:id',mealsValidation.getOne,mealsService.getMealById);
 
-mealRouter.post('/', isAuthunticated([UserRoles.WAITER])
+mealRouter.post('/', isAuthenticated([UserRoles.WAITER])
     ,mealsService.uploadImage,mealsService.saveImage
     ,mealsValidation.createOne,mealsService.createMeals);
 
-mealRouter.put('/:id', isAuthunticated([UserRoles.WAITER]),
+mealRouter.put('/:id', isAuthenticated([UserRoles.WAITER]),
     mealsService.uploadImage,mealsService.saveImage
     ,mealsValidation.updateOne,mealsService.updateMeal); 
 
-mealRouter.delete('/:id', isAuthunticated([UserRoles.WAITER])
+mealRouter.delete('/:id', isAuthenticated([UserRoles.WAITER])
     ,mealsValidation.deleteOne,mealsService.deleteMeal);
 
 

@@ -2,9 +2,9 @@ import mongoose, { Schema, model } from "mongoose";
 import { ISubOrder, OrderStatus } from "./subOrder.types";
 
 const subOrderSchema = new Schema({
-    departmentId: {
+    kitchenId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Department',
+        ref: 'Kitchens',
         required: true
     },
     orderId: {
@@ -61,7 +61,7 @@ subOrderSchema.virtual('orderData', {
 })
 
 subOrderSchema.virtual('deptData', {
-    ref: 'Department',
+    ref: 'Kitchens',
     localField: 'deptId',
     foreignField: '_id',
     justOne: true,

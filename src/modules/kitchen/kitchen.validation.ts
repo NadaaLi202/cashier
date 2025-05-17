@@ -1,17 +1,17 @@
 import { body, param } from "express-validator";
-import departmentSchema from "./department.schema";
 import validatorMiddleware from "../../middleware/validator.middleware";
+import kitchenSchema from "./kitchen.schema";
 
 
-class DepartmentsValidation {
+class KitchensValidation {
 
     createOne = [
         body('name').notEmpty().withMessage('name is required')
         .isLength({min : 2, max : 50}).withMessage('name must be at least 2 characters long')
         .custom(async( val: string, {req}) => {
 
-        const department = await  departmentSchema.findOne({name : val});
-        if(department) throw new Error(`${req.__('not_found')}`);
+        const kitchen = await  kitchenSchema.findOne({name : val});
+        if(kitchen) throw new Error(`${req.__('not_found')}`);
         return true;
     }),
      body('description').optional()
@@ -25,8 +25,8 @@ class DepartmentsValidation {
         .isLength({min : 2, max : 50}).withMessage('name must be at least 2 characters long')
         .custom(async( val: string, {req}) => {
 
-        const department = await departmentSchema.findOne({name : val});
-        if(department && department._id!.toString() !== req.params?.id.toString()) throw new Error('Department already exists');
+        const kitchen = await kitchenSchema.findOne({name : val});
+        if(kitchen && kitchen._id!.toString() !== req.params?.id.toString()) throw new Error('Kitchen already exists');
         return true;
     }), validatorMiddleware ]
 
@@ -39,6 +39,6 @@ class DepartmentsValidation {
    validatorMiddleware ]
 }
 
-const departmentsValidation = new DepartmentsValidation();
+const kitchenValidation = new KitchensValidation();
 
-export default departmentsValidation;
+export default kitchenValidation;

@@ -1,16 +1,16 @@
 import mongoose from "mongoose";
+import { ZodNumber } from "zod";
 
 
 
-
-const storeSchema = new mongoose.Schema({
+const stockSchema = new mongoose.Schema({
 
     nameOfItem: {
         type : String,
         required : true
     },
     quantity : {
-        type: String,
+        type: Number,
         required : true
     },
     price : {
@@ -25,7 +25,7 @@ const storeSchema = new mongoose.Schema({
     unit : {
         type : String,
         required : true,
-        default : '0'
+        default : 'pcs'
     },
     managerId : {
         type : mongoose.Schema.Types.ObjectId,
@@ -39,4 +39,4 @@ const storeSchema = new mongoose.Schema({
 
 },{timestamps : true})
 
-export default mongoose.model('Store',storeSchema);
+export default mongoose.model('Stock',stockSchema);

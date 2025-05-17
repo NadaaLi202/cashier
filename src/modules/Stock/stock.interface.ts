@@ -2,10 +2,10 @@
 
 import { Types,Document } from "mongoose";
 
-export interface  Store extends Document {
+export interface  Stock extends Document {
 
     nameOfItem : string ;
-    quantity : string;
+    quantity : number;
     price : number;
     category : string;
     unit : string;

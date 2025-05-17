@@ -20,12 +20,12 @@ class SubOrderService {
         try {
             const subOrdersMap = new Map<string, ICreateSubOrder>();
             for (const orderItem of order.orderItems) {
-                if(subOrdersMap.has(orderItem.departmentId)) {
-                    const subOrder = subOrdersMap.get(orderItem.departmentId) as ICreateSubOrder;
+                if(subOrdersMap.has(orderItem.kitchenId)) {
+                    const subOrder = subOrdersMap.get(orderItem.kitchenId) as ICreateSubOrder;
                     subOrder.orderItems.push(orderItem);
-                    subOrdersMap.set(orderItem.departmentId, subOrder);
+                    subOrdersMap.set(orderItem.kitchenId, subOrder);
                 } else {
-                    subOrdersMap.set(orderItem.departmentId, { orderItems: [orderItem], departmentId: orderItem.departmentId, orderId: order._id });
+                    subOrdersMap.set(orderItem.kitchenId, { orderItems: [orderItem], departmentId: orderItem.kitchenId, orderId: order._id });
                 }
             }
 

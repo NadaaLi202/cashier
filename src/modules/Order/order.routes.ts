@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { orderCtrl } from "./odrer.controller";
-import { isAuthunticated } from "../../middleware/auth.middleware";
+import { isAuthenticated } from "../../middleware/auth.middleware";
 import asyncHandler from 'express-async-handler'
 import { UserRoles } from "../User/users.interface";
 
@@ -8,11 +8,11 @@ const router = Router();
 
 router.route('/')
     .post(
-        isAuthunticated([UserRoles.WAITER]),
+        isAuthenticated([UserRoles.WAITER]),
         asyncHandler(orderCtrl.createOrder)
     )
     .get(
-        isAuthunticated([
+        isAuthenticated([
             UserRoles.WAITER, 
             UserRoles.MANAGER, 
             UserRoles.CASHIER,
@@ -23,35 +23,35 @@ router.route('/')
 
 router.route('/:id')
     .patch(
-        isAuthunticated([UserRoles.WAITER]),
+        isAuthenticated([UserRoles.WAITER]),
         asyncHandler(orderCtrl.addMealToOrder)
     )
     .delete(
-        isAuthunticated([UserRoles.MANAGER]),
+        isAuthenticated([UserRoles.MANAGER]),
         asyncHandler(orderCtrl.deleteMealFromOrder)
     )
 
 router.patch(
     '/:id/change-table',
-    isAuthunticated([UserRoles.WAITER]),
+    isAuthenticated([UserRoles.WAITER]),
     asyncHandler(orderCtrl.changeTable)
 )
 
 router.patch(
     '/:id/complete',
-    isAuthunticated([UserRoles.CASHIER]),
+    isAuthenticated([UserRoles.CASHIER]),
     asyncHandler(orderCtrl.completeOrder)
 )
 
 router.patch(
     '/:id/cancel',
-    isAuthunticated([UserRoles.MANAGER]),
+    isAuthenticated([UserRoles.MANAGER]),
     asyncHandler(orderCtrl.cancelOrder)
 )
 
 router.get(
     '/get-by-code/:orderCode',
-    isAuthunticated([
+    isAuthenticated([
         UserRoles.WAITER,
         UserRoles.MANAGER,
         UserRoles.CASHIER,
@@ -60,6 +60,6 @@ router.get(
     asyncHandler(orderCtrl.getOrderByCode)
 )
 
-export const ordrRouter = router;
+export const orderRouter = router;
 
 

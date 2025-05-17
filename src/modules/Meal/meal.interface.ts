@@ -9,8 +9,13 @@ export interface Meal extends Document {
     description: string;
     image : string;
     managerId :Types.ObjectId ;
-    departmentId : Types.ObjectId;
-    ingredients : string;
+    kitchenId : Types.ObjectId;
+    ingredients : [
+        {
+            stockItemId : Types.ObjectId,
+            quantityUsed : number
+        }
+    ]
     price : number;
     numberOfMeals : number;
     category : string;

@@ -20,9 +20,9 @@ const orderSchema = new Schema({
         required: true
     },
     orderItems: [{
-        departmentId: {
+        kitchenId: {
             type: Schema.Types.ObjectId,
-            ref: 'Department',
+            ref: 'Kitchens',
             required: true
         },
         mealId: {

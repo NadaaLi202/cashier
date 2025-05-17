@@ -2,7 +2,7 @@
 
 import { Document ,  Types } from "mongoose";
 
-export  interface Department  extends Document {
+export  interface Kitchen  extends Document {
 
     readonly  name : string;
     description : string;
