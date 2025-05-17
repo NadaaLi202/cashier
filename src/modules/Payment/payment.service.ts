@@ -45,8 +45,9 @@ class PaymentService {
             
             const payment = await this.paymentDataSource.createOne({ ...data, totalAmount });
             await orderService.updateOrder({ orderId, data: { isPaid: true } });
-            await tableService.updateTable({ tableNumber: order.tableNumber, data: { isAvailable: true } });
-            
+            if (order?.tableNumber) {
+                await tableService.updateTable({ tableNumber: order.tableNumber, data: { isAvailable: true } });
+            }
             // Print reset for payment
             
             return payment;

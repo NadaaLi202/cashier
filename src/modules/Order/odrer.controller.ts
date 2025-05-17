@@ -6,9 +6,9 @@ import { params } from "../../utils/general";
 
 const createOrder = async (req: AuthRequest, res: Response) => {
     const waiterId = req?.user?.userId as string;
-    const { orderItems, tableNumber } = createOrderSchema.parse(req.body);
+    const { orderItems, tableNumber, type } = createOrderSchema.parse(req.body);
 
-    const order = await orderService.createOrder({ orderItems, tableNumber, waiterId });
+    const order = await orderService.createOrder({ orderItems, type, tableNumber, waiterId });
     
     res.status(201).json({
         success: true,

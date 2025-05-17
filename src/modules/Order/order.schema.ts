@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
-import { IOrder, OrderStatus } from "./order.types";
+import { IOrder, OrderStatus, OrderType } from "./order.types";
+import ApiError from "../../utils/apiErrors";
 
 const orderSchema = new Schema({
     waiterId: {
@@ -15,9 +16,14 @@ const orderSchema = new Schema({
     orderCode: {
         type: String
     },
+    type: {
+        type: String,
+        enum: Object.values(OrderType),
+        required: true
+    },
     tableNumber: {
         type: Number,
-        required: true
+        required: false
     },
     orderItems: [{
         departmentId: {
@@ -93,6 +99,12 @@ orderSchema.pre('save', async function(next) {
             if (!existingOrder) {
                 isUnique = true;
             }
+        }
+
+        if (this.type === OrderType.DINE_IN && !this?.tableNumber) {
+            return next(
+                new ApiError('يجب تحديد الطاولة', 400)
+            )
         }
         
         this.orderCode = orderCode;
