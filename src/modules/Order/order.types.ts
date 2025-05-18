@@ -4,7 +4,8 @@ import { IDBModel } from "../../utils/general";
 export interface IOrder extends IDBModel {
     waiterId: string;
     orderCode: string;
-    tableNumber: number;
+    type: OrderType,
+    tableNumber?: number;
     orderItems: IOrderMealItem[];
     subtotalPrice: number;
     totalPrice: number;
@@ -17,13 +18,24 @@ export interface IOrder extends IDBModel {
     // orderItemsData?: IMeal[];
 }
 
-export interface ICreateOrder {
+export enum OrderType {
+    DINE_IN = 'dine_in',
+    TAKEAWAY = 'takeaway'
+}
+
+export interface ICreateOrderQuery {
     waiterId: string;
-    tableNumber: number;
+    type: OrderType,
+    tableNumber?: number;
     orderItems: {
         mealId: string;
         quantity: number;
     }[];
+}
+
+export interface ICreateOrderData extends ICreateOrderQuery {
+    subtotalPrice: number; 
+    orderItems: IOrderMealItem[];
 }
 
 export interface IOrderMealItem {

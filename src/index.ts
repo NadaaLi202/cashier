@@ -37,7 +37,7 @@ const Routes : (app : Application) => void = (app: express.Application) : void =
 
     app.use('/api/v1/users',userRouter)
     app.use('/api/v1/auth',authRouter)
-    app.use('/api/v1/kitchens',kitchenRouter)
+    app.use('/api/v1/kitchen',kitchenRouter)
     app.use('/api/v1/meals',mealsRouter)
     app.use('/api/v1/order', orderRouter)
     app.use('/api/v1/table', tableRoutes)

@@ -1,11 +1,13 @@
 import ApiError from "../../utils/apiErrors";
 import { pagenation } from "../../utils/pagination";
 import { orderRepository } from "./order.repository";
-import { ICreateOrder, IOrder, IOrderMealItem, OrderMealStatus, OrderStatus } from "./order.types";
+import { ICreateOrderData, ICreateOrderQuery, IOrder, IOrderMealItem, OrderMealStatus, OrderStatus, OrderType } from "./order.types";
 import { tableService } from "../Table";
 import Meal from "../Meal/meal.schema";
 import { subOrderService } from "../subOrder";
 import stockSchema from "../Stock/stock.schema";
+import { FilterQuery } from "mongoose";
+
 class OrderService {
 
     constructor(private readonly orderdDataSource = orderRepository) {}
@@ -30,13 +32,24 @@ class OrderService {
         return updatedOrder;
     }
 
-    async createOrder(data: ICreateOrder) {
+    async createOrder(data: ICreateOrderQuery) {
         try {
-            const { orderItems, tableNumber, waiterId } = data;
-            //! Check if table is exist
-            const table = await tableService.isTableAvalible(tableNumber);
-            if(!table) {
-                throw new ApiError('Table not found or not available', 404);
+            const { orderItems, tableNumber, waiterId, type } = data;
+
+            let orderObject: ICreateOrderData = {} as ICreateOrderData;
+            orderObject.type = type;
+            orderObject.waiterId = waiterId;
+
+            if (type === OrderType.DINE_IN ) {
+                if (!tableNumber) {
+                    throw new ApiError('يجب عليك تحديد الطاولة', 400)
+                }
+                //! Check if table is exist
+                const table = await tableService.isTableAvalible(tableNumber);
+                if(!table) {
+                    throw new ApiError('Table not found or not available', 404);
+                }
+                orderObject.tableNumber = tableNumber;
             }
             
             //! Check is all meal availbale
@@ -44,8 +57,7 @@ class OrderService {
             const newOrderItems: IOrderMealItem[] = [];
             for(const item of orderItems) {
                 const meal = await Meal.findById(item.mealId);
-                // if (!meal || !meal?.isAvailable) {
-                if(!meal) {
+                if (!meal || !meal?.isAvailable) {
                     throw new ApiError('Meal not available now', 404);
                 }
                 
@@ -63,16 +75,14 @@ class OrderService {
                     status: OrderMealStatus.PENDING
                 });
             }
-            // console.log(newOrderItems);
-            const order = await this.orderdDataSource.createOne({
-                waiterId,
-                tableNumber,
-                orderItems: newOrderItems,
-                subtotalPrice, 
-                status: OrderStatus.PENDING 
-            });
+            orderObject.orderItems = newOrderItems;
+            orderObject.subtotalPrice = subtotalPrice;
+            
+            const order = await this.orderdDataSource.createOne(orderObject);
 
-            await tableService.updateTable({ tableNumber, data: { isAvailable: false } });
+            if (tableNumber) {
+                await tableService.updateTable({ tableNumber, data: { isAvailable: false } });
+            }
 
             return order;
         } catch (error) {
@@ -92,6 +102,7 @@ class OrderService {
             // if (!meal || !meal?.isAvailable) {
             if(!meal) {
                 throw new ApiError('Meal not available now', 404);
+
             }
             const mealObj = meal.toObject();
             //! Update order items if meal is already in order
@@ -185,6 +196,10 @@ class OrderService {
     async changeTable({ orderId, tableNumber }: { orderId: string, tableNumber: number }) {
         try {
             const order = await this.isOrderExist(orderId);
+            if (order.type === OrderType.TAKEAWAY && !order?.tableNumber) {
+                throw new ApiError('هذا الطلب ليس لديه طاولات', 400)
+            }
+
             const table = await tableService.isTableAvalible(tableNumber);
             if(!table) {
                 throw new ApiError('Table not found or not available', 404);
@@ -192,17 +207,38 @@ class OrderService {
             if(order.tableNumber === tableNumber) {
                 throw new ApiError('Table is already assigned to this order', 400);
             }
-            await tableService.updateTable({ tableNumber: order.tableNumber, data: { isAvailable: true } });
-            await tableService.updateTable({ tableNumber, data: { isAvailable: false } });
-            return this.orderdDataSource.updateOne({ _id: orderId }, { tableNumber });
+
+            const updatedOrder = await this.orderdDataSource.updateOne({ _id: orderId }, { tableNumber });
+            
+            if (order?.tableNumber) {
+                await tableService.updateTable({ tableNumber: order?.tableNumber, data: { isAvailable: true } });
+                await tableService.updateTable({ tableNumber, data: { isAvailable: false } });
+            }
+            
+            return updatedOrder; 
         } catch (error) {
             if(error instanceof ApiError) throw error
             throw new ApiError('Failed to change table', 500);
         }
     }
 
+    async findOne(query: FilterQuery<IOrder>) {
+        const order = await this.orderdDataSource.findOne(query);
+        if(!order) {
+            throw new ApiError('الطلب غير موجود', 404)
+        }
+        return order;
+    }
     async getOrderByCode(orderCode: string) {
-        return this.orderdDataSource.findOne({ orderCode });
+        return await this.findOne({ orderCode })
+    }
+
+    async getOrderById(orderId: string) {
+        return await this.findOne({ _id: orderId })  
+    }
+
+    async getOrderByTable(tableNumber: number) {
+        return await this.findOne({ tableNumber, isPaid: false });
     }
 
     async cancelOrder(orderId: string) {
@@ -214,8 +250,14 @@ class OrderService {
             if(order.status === OrderStatus.CANCELLED) {
                 throw new ApiError('Order is already cancelled', 400);
             }
-            await tableService.updateTable({ tableNumber: order.tableNumber, data: { isAvailable: true } });
-            return this.orderdDataSource.updateOne({ _id: orderId }, { status: OrderStatus.CANCELLED });
+            
+            const cancelledOrder = await this.orderdDataSource.updateOne({ _id: orderId }, { status: OrderStatus.CANCELLED });
+            
+            if (order.tableNumber) {
+                await tableService.updateTable({ tableNumber: order.tableNumber, data: { isAvailable: true } });
+            }
+
+            return cancelledOrder
         } catch (error) {
             if(error instanceof ApiError) throw error
             throw new ApiError('Failed to cancel order', 500);

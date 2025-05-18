@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { OrderStatus } from "./order.types"
+import { OrderStatus, OrderType } from "./order.types"
 import { MONGODBObjectId } from "../../utils/general"
 
 export const orderItemSchema = z.object({
@@ -8,8 +8,17 @@ export const orderItemSchema = z.object({
 })
 
 export const createOrderSchema = z.object({
-    tableNumber: z.number().int().positive(),
+    type: z.nativeEnum(OrderType),
+    tableNumber: z.number().int().positive().optional(),
     orderItems: z.array(orderItemSchema),
+}).refine((data) => {
+    if(data.type === OrderType.DINE_IN && !data.tableNumber) {
+        return false;
+    } 
+    return true;
+}, {
+    path: ['tableNumber'],
+    message: 'يجب عليك تحديد الطاولة'
 })
 
 export const addMealToOrderSchema = orderItemSchema;
@@ -32,4 +41,7 @@ export const changeTableSchema = z.object({
 
 export const getOrderByCodeSchema = z.object({
     orderCode: z.string().regex(/^ORD-\d{7}$/, 'invalid order code'),
+})
+export const getOrderByTableSchema = z.object({
+    tableNumber: z.coerce.number(),
 })
