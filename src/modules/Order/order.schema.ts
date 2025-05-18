@@ -122,7 +122,7 @@ orderSchema.pre('save', async function(next) {
 // })
 
 orderSchema.virtual('orderItemsData', {
-    ref: 'Meal',
+    ref: 'Meals',
     localField: 'orderItems.mealId',
     foreignField: '_id',
     justOne: false,
