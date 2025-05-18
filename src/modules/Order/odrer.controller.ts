@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware";
-import { addMealToOrderSchema, changeTableSchema, createOrderSchema, deleteMealFromOrderSchema, getAllOrdersSchema, getOrderByCodeSchema } from "./order.validation";
+import { addMealToOrderSchema, changeTableSchema, createOrderSchema, deleteMealFromOrderSchema, getAllOrdersSchema, getOrderByCodeSchema, getOrderByTableSchema } from "./order.validation";
 import { orderService } from "./order.service";
 import { params } from "../../utils/general";
 
@@ -105,6 +105,30 @@ const getOrderByCode = async (req: AuthRequest, res: Response) => {
     });
 }
 
+const getOrderById = async (req: AuthRequest, res: Response) => {
+    const { id: orderId } = params.parse(req.params);
+
+    const order = await orderService.getOrderById(orderId);
+
+    res.status(200).json({
+        success: true,
+        message: 'Order fetched successfully',
+        data: order
+    });
+}
+
+const getOrderByTable = async (req: AuthRequest, res: Response) => {
+    const { tableNumber } = getOrderByTableSchema.parse(req.params);
+
+    const order = await orderService.getOrderByTable(tableNumber);
+
+    res.status(200).json({
+        success: true,
+        message: 'Order fetched successfully',
+        data: order
+    });
+}
+
 export const orderCtrl = {
     createOrder,
     addMealToOrder,
@@ -113,7 +137,9 @@ export const orderCtrl = {
     changeTable,
     cancelOrder,
     completeOrder,
-    getOrderByCode
+    getOrderByCode,
+    getOrderByTable,
+    getOrderById
 }
 
 

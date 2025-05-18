@@ -42,3 +42,6 @@ export const changeTableSchema = z.object({
 export const getOrderByCodeSchema = z.object({
     orderCode: z.string().regex(/^ORD-\d{7}$/, 'invalid order code'),
 })
+export const getOrderByTableSchema = z.object({
+    tableNumber: z.coerce.number(),
+})

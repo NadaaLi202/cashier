@@ -5,6 +5,7 @@ import { ICreateOrderData, ICreateOrderQuery, IOrder, IOrderMealItem, OrderMealS
 import { tableService } from "../Table";
 import Meal from "../Meal/meal.schema";
 import { subOrderService } from "../subOrder";
+import { FilterQuery } from "mongoose";
 
 class OrderService {
 
@@ -218,8 +219,23 @@ class OrderService {
         }
     }
 
+    async findOne(query: FilterQuery<IOrder>) {
+        const order = await this.orderdDataSource.findOne(query);
+        if(!order) {
+            throw new ApiError('الطلب غير موجود', 404)
+        }
+        return order;
+    }
     async getOrderByCode(orderCode: string) {
-        return this.orderdDataSource.findOne({ orderCode });
+        return await this.findOne({ orderCode })
+    }
+
+    async getOrderById(orderId: string) {
+        return await this.findOne({ _id: orderId })  
+    }
+
+    async getOrderByTable(tableNumber: number) {
+        return await this.findOne({ tableNumber, isPaid: false });
     }
 
     async cancelOrder(orderId: string) {

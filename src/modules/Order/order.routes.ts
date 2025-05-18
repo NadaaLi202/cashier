@@ -29,6 +29,9 @@ router.route('/:id')
     .delete(
         isAuthunticated([UserRoles.MANAGER]),
         asyncHandler(orderCtrl.deleteMealFromOrder)
+    ).get(
+        isAuthunticated([UserRoles.WAITER, UserRoles.CASHIER, UserRoles.MANAGER, UserRoles.ACCOUNTANT]),
+        asyncHandler(orderCtrl.getOrderById)
     )
 
 router.patch(
@@ -58,6 +61,17 @@ router.get(
         UserRoles.ACCOUNTANT
     ]),
     asyncHandler(orderCtrl.getOrderByCode)
+)
+
+router.get(
+    '/get-by-table/:tableNumber',
+    isAuthunticated([
+        UserRoles.WAITER,
+        UserRoles.MANAGER,
+        UserRoles.CASHIER,
+        UserRoles.ACCOUNTANT
+    ]),
+    asyncHandler(orderCtrl.getOrderByTable)
 )
 
 export const ordrRouter = router;
