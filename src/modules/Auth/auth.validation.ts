@@ -1,7 +1,7 @@
 import {body} from "express-validator";
+import validatorMiddleware from "../../middleware/validator.middleware";
 import usersSchema from "../User/users.schema";
 
-import validatorMiddleware from "../../middleware/validator.middleware";
 
 class AuthValidation {
 

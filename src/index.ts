@@ -1,7 +1,6 @@
 import express, { Application } from "express";
 import globalErrorHandler from "./middleware/errors.middleware";
 import ApiError from "./utils/apiErrors";
-
 import userRouter from "./modules/User/users.route";
 import authRouter from "./modules/Auth/auth.router";
 import kitchenRouter from "./modules/kitchen/kitchen.route";
@@ -11,6 +10,7 @@ import { orderRouter } from "./modules/Order";
 import { tableRoutes } from "./modules/Table";
 import { paymentRouter } from "./modules/Payment";
 import stockRouter from "./modules/Stock/stock.routes";
+
 
 declare module "express" {
 

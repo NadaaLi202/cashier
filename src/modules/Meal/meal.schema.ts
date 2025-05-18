@@ -28,6 +28,8 @@ const mealSchema = new mongoose.Schema({
     price : {type : Number , required : true},
     category : {type : String, required : true},
     isAvailable : {type: Boolean, default: "true"}
+
+    // category : {type : String, enum : ['breakfast', 'lunch', 'dinner', 'drinks','snacks'] , required : true},
 },{timestamps : true})
 
 const imagesUrl = (document : Meal ) => {

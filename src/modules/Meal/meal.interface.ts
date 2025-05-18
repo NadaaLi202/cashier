@@ -21,6 +21,7 @@ export interface Meal extends Document {
     category : string;
     isAvailable : boolean;
 
+
 }
 
 // type Category = 'breakfast' | 'lunch' | 'dinner' | 'drinks' | 'desserts' | 'juices';
