@@ -5,6 +5,7 @@ import { MONGODBObjectId } from "../../utils/general"
 export const orderItemSchema = z.object({
     mealId: z.string().regex(MONGODBObjectId, 'invalid meal id'),
     quantity: z.number().min(1),
+    note: z.string().optional()
 })
 
 export const createOrderSchema = z.object({

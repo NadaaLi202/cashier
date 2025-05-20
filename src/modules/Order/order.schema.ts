@@ -46,23 +46,18 @@ const orderSchema = new Schema({
             type: Number,
             required: true
         },
-        status: {
+        isCancelled: {
+            type: Boolean,
+            default: false
+        },
+        note: {
             type: String,
-            enum: ['pending', 'confirmed', 'cancelled'],
-            default: 'pending'
+            reqyured: false
         }
     }],
-    subtotalPrice: {
+    totalPrice: {
         type: Number,
         required: true
-    },
-    discount: {
-        type: Number,
-        required: false,
-        default: 0
-    },
-    totalPrice: {
-        type: Number
     },
     status: {
         type: String, 
@@ -111,7 +106,7 @@ orderSchema.pre('save', async function(next) {
         
         this.orderCode = orderCode;
     }
-    this.totalPrice = this.subtotalPrice - (this.discount || 0);
+
     next();
 });
 

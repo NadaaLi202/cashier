@@ -5,9 +5,9 @@ import { ICreateOrderData, ICreateOrderQuery, IOrder, IOrderMealItem, OrderMealS
 import { tableService } from "../Table";
 import Meal from "../Meal/meal.schema";
 import { subOrderService } from "../subOrder";
-import stockSchema from "../Stock/stock.schema";
-import mongoose, { FilterQuery } from "mongoose";
-import stockOutflowSchema from "../StockOutflow/stockOutflow.schema";
+
+import { FilterQuery } from "mongoose";
+import { Order } from "./order.schema";
 
 class OrderService {
 
@@ -54,7 +54,7 @@ class OrderService {
             }
             
             //! Check is all meal availbale
-            let subtotalPrice = 0;
+            let totalPrice = 0;
             const newOrderItems: IOrderMealItem[] = [];
             for(const item of orderItems) {
                 const meal = await Meal.findById(item.mealId);
@@ -66,18 +66,20 @@ class OrderService {
                 // console.log(meal.departmentId)
 
                 const mealObj = meal.toObject();
+                console.log(mealObj)
 
-                subtotalPrice += meal.price * item.quantity;
+                totalPrice += meal.price * item.quantity;
                 newOrderItems.push({
                     mealId: item.mealId,
-                    kitchenId: mealObj.kitchenId.toString(),
+                    kitchenId: mealObj?.kitchenId?.toString() || "681a62e0e847cf51f2080246",
                     quantity: item.quantity,
                     price: mealObj.price,
-                    status: OrderMealStatus.PENDING
+                    isCancelled: false,
+                    note: item?.note || ""
                 });
             }
             orderObject.orderItems = newOrderItems;
-            orderObject.subtotalPrice = subtotalPrice;
+            orderObject.totalPrice = totalPrice;
             
             const order = await this.orderdDataSource.createOne(orderObject);
 
@@ -94,6 +96,7 @@ class OrderService {
             throw new ApiError('Failed to create order', 500);
         }
     }
+
 
 
     // async createOrder(data: ICreateOrderQuery) {
@@ -219,17 +222,19 @@ class OrderService {
       
 
 
-    async addMealToOrder({ orderId, orderItem }: { orderId: string, orderItem: { mealId: string, quantity: number } }) {
+
+    async addMealToOrder({ orderId, orderItem }: { orderId: string, orderItem: { mealId: string, quantity: number, note?: string } }) {
         try {
-            let { orderItems, subtotalPrice } = await this.isOrderExist(orderId);
+            let { orderItems, totalPrice } = await this.isOrderExist(orderId);
             
             const meal = await Meal.findById(orderItem.mealId);
-            // if (!meal || !meal?.isAvailable) {
-            if(!meal) {
+            if (!meal || !meal?.isAvailable) {
                 throw new ApiError('Meal not available now', 404);
-
             }
+
             const mealObj = meal.toObject();
+            console.log(mealObj)
+
             //! Update order items if meal is already in order
             orderItems = orderItems.filter(item => item.mealId.toString() !== orderItem.mealId.toString());
             orderItems.push({
@@ -237,16 +242,17 @@ class OrderService {
                 kitchenId: mealObj.kitchenId.toString(),
                 quantity: orderItem.quantity,
                 price: meal.price,
-                status: OrderMealStatus.PENDING
+                isCancelled: false,
+                note: orderItem?.note || ""
             });
             
-            subtotalPrice = orderItems.reduce(
-                (acc, item) => acc + item.price * item.quantity, 0
+            totalPrice = orderItems.reduce(
+                (acc, item) => acc + (item.isCancelled ? 0 : item.price * item.quantity), 0
             );
            
             const updatedOrder = await this.orderdDataSource.updateOne(
                 { _id: orderId }, 
-                { subtotalPrice, orderItems });
+                { totalPrice, orderItems });
             
             return updatedOrder;
         } catch (error) {
@@ -257,25 +263,25 @@ class OrderService {
 
     async deleteMealFromOrder({ orderId, mealId }: { orderId: string, mealId: string }) {
         try {
-            let { orderItems, subtotalPrice } = await this.isOrderExist(orderId);
+            const order = await this.isOrderExist(orderId);
             
-            const orderItem = orderItems.find(
-                item => item.mealId.toString() === mealId.toString()
-            ) as IOrderMealItem;
-
-            if (!orderItem) {
-                throw new ApiError('Meal not found in order', 404);
-            }
-
-            subtotalPrice -= orderItem.price * orderItem.quantity;
-            
-            orderItems = orderItems.filter(
-                item => item.mealId.toString() !== mealId.toString()
+            // Update the orderItems array directly
+            const orderItems = order.orderItems.map(item => 
+                item.mealId.toString() === mealId.toString() 
+                    ? { ...item, isCancelled: true }
+                    : item
             );
-            
-            const updatedOrder = await this.orderdDataSource.updateOne(
-                { _id: orderId }, 
-                { subtotalPrice, orderItems }
+
+            console.log(orderItems[0].isCancelled)
+    
+            const totalPrice = orderItems.reduce(
+                (acc, item) => acc + (item.isCancelled ? 0 : item.price * item.quantity), 0
+            );
+
+            const updatedOrder = await Order.findByIdAndUpdate(
+                orderId,
+                { $set: { orderItems, totalPrice } },
+                { new: true }
             );
             
             return updatedOrder;
@@ -283,7 +289,7 @@ class OrderService {
             if(error instanceof ApiError) throw error
             throw new ApiError('Failed to delete meal from order', 500);
         }
-    } 
+    }
 
     async deleteOrder(orderId: string) {
         try {
@@ -354,6 +360,7 @@ class OrderService {
         }
         return order;
     }
+    
     async getOrderByCode(orderCode: string) {
         return await this.findOne({ orderCode })
     }
@@ -426,7 +433,7 @@ class OrderService {
           if (error instanceof ApiError) throw error;
           throw new ApiError('Failed to complete order', 500);
         }
-      }
+    }
 
     async sendOrderForDepartments(order: IOrder) {
         // console.log(order);

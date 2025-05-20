@@ -8,9 +8,7 @@ export interface IOrder extends IDBModel {
     type: OrderType,
     tableNumber?: number;
     orderItems: IOrderMealItem[];
-    subtotalPrice: number;
     totalPrice: number;
-    discount?: number;
     status: OrderStatus;
     isPaid: boolean;
 
@@ -32,11 +30,12 @@ export interface ICreateOrderQuery {
     orderItems: {
         mealId: string;
         quantity: number;
+        note?: string;
     }[];
 }
 
 export interface ICreateOrderData extends ICreateOrderQuery {
-    subtotalPrice: number; 
+    totalPrice: number; 
     orderItems: IOrderMealItem[];
     stockOutflows?: (string | Types.ObjectId)[] | undefined ; 
 
@@ -47,7 +46,8 @@ export interface IOrderMealItem {
     mealId: string;
     quantity: number;
     price: number;
-    status: OrderMealStatus;
+    isCancelled: boolean,
+    note?: string;
 }
 
 export enum OrderMealStatus {
