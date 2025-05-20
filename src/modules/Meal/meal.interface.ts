@@ -1,6 +1,5 @@
 
 
-import { Types } from "mongoose";
 import { Document , Schema } from "mongoose";
 
 export interface Meal extends Document {
@@ -8,14 +7,18 @@ export interface Meal extends Document {
     readonly name : string;
     description: string;
     image : string;
-    managerId :Types.ObjectId ;
-    kitchenId : Types.ObjectId;
-    ingredients : [
+    managerId :string ;
+    kitchenId : string ;
+    ingredients : 
+    [
         {
-            stockItemId : Types.ObjectId,
+            
+            stockItemId : string,
             quantityUsed : number
+            
         }
-    ]
+     ] ;
+    
     price : number;
     numberOfMeals : number;
     category : string;

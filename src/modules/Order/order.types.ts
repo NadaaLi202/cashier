@@ -1,5 +1,6 @@
 import { IPayment } from "../Payment";
 import { IDBModel } from "../../utils/general";
+import { Types } from "mongoose";
 
 export interface IOrder extends IDBModel {
     waiterId: string;
@@ -12,6 +13,7 @@ export interface IOrder extends IDBModel {
     discount?: number;
     status: OrderStatus;
     isPaid: boolean;
+
     // paymentId: string;  
     // paymentData?: IPayment    
     // waiterData?: IUser;
@@ -36,6 +38,8 @@ export interface ICreateOrderQuery {
 export interface ICreateOrderData extends ICreateOrderQuery {
     subtotalPrice: number; 
     orderItems: IOrderMealItem[];
+    stockOutflows?: (string | Types.ObjectId)[] | undefined ; 
+
 }
 
 export interface IOrderMealItem {

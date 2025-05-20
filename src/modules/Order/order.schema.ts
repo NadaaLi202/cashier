@@ -25,6 +25,8 @@ const orderSchema = new Schema({
         type: Number,
         required: false
     },
+  
+
     orderItems: [{
         kitchenId: {
             type: Schema.Types.ObjectId,

@@ -1,7 +1,7 @@
 {
   "name": "cashier-app",
   "version": "1.0.0",
-  "main": "index.js", 
+  "main": "index.js",
   "scripts": {
     "dev": "nodemon main.ts",
     "start": "set NODE_ENV=production && node ./dist/main.js",
@@ -14,6 +14,7 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.6.1",
     "compression": "^1.7.5",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

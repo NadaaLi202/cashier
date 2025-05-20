@@ -3,7 +3,6 @@ import { Request, Response, NextFunction } from "express";
 import crypto from "crypto";
 import usersSchema from "../User/users.schema";
 import bcrypt from "bcryptjs";
-import createTokens from "../../utils/token";
 import sanitization from "../../utils/sanitization";
 import jwt from "jsonwebtoken"
 import sendEmail from "../../utils/sendMail";

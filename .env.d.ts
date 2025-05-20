@@ -17,7 +17,9 @@ declare namespace NodeJS {
     readonly GOOGLE_CALLBACK : string;
     readonly GOOGLE_CLIENT_ID : string;
     readonly GOOGLE_CLIENT_SECRET : string;
-
+    readonly CLOUDINARY_CLOUD_NAME: string;
+    readonly CLOUDINARY_API_KEY: string;
+    readonly CLOUDINARY_API_SECRET: string;
 
 }
 
