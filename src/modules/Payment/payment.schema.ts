@@ -47,7 +47,7 @@ paymentSchema.virtual('orderData', {
     autopopulate: true
 })
 paymentSchema.virtual('cashierData', {
-    ref: 'User',
+    ref: 'Users',
     localField: 'cashierId',
     foreignField: '_id',
     justOne: true,

@@ -75,6 +75,8 @@ class PaymentService {
             const payments = await this.paymentDataSource.findMany(query, { skip, limit });
             return payments;
         } catch (error) {
+            console.log(error)
+            if(error instanceof ApiError) throw error;
             throw new ApiError('Failed to get all payments', 500);
         }
     }
@@ -90,6 +92,3 @@ class PaymentService {
 }
 
 export const paymentService = new PaymentService();
-
-
-

@@ -33,7 +33,7 @@ class OrderRepository<T = IOrder> {
     async deleteOne(query: FilterQuery<T>): Promise<boolean> {
         const result = await this.orderModel.deleteOne(query).populate([
             { path: 'orderItemsData' }
-        ]);;
+        ]);
         return result.deletedCount > 0;
     }
 }
