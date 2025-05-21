@@ -6,11 +6,18 @@ export  interface Kitchen  extends Document {
 
     readonly  name : string;
     description : string;
-    image : string;
+    image : ImageType | string;
     readonly isActive : boolean;
-    userId : Types.ObjectId;
+    readonly managerId : Types.ObjectId;
     category : Category;
 
 }
+
+export interface ImageType {
+    url : string;
+    publicId : string
+}
+
+
 type Category = 'breakfast' | 'lunch' | 'dinner' | 'drinks' | 'desserts' | 'juices';
 

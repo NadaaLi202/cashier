@@ -21,7 +21,7 @@ kitchenRouter.post('/',
 kitchenRouter.put('/:id',
     isAuthenticated([UserRoles.MANAGER]),
     kitchensService.uploadImage,
-    kitchensService.saveImage,
+    kitchensService.updateImage,
     kitchenValidation.updateOne,
     kitchensService.updateKitchen
 );
@@ -30,6 +30,12 @@ kitchenRouter.delete('/:id',
     isAuthenticated([UserRoles.MANAGER]),
     kitchenValidation.deleteOne,
     kitchensService.deleteKitchen
+);
+
+kitchenRouter.delete('/:id/image',
+    isAuthenticated([UserRoles.MANAGER]),
+    kitchenValidation.deleteOne,
+    kitchensService.deleteKitchenImage
 );
 
 export default kitchenRouter;

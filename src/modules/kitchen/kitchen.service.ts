@@ -26,7 +26,7 @@ class KitchensService {
                         const stream = cloudinary.uploader.upload_stream(
                             {
                                 resource_type: "image",
-                                folder: "kitchens",
+                                folder: "kitchen",
                                 format: "webp",
                             },
                             (error, result) => {
@@ -44,7 +44,10 @@ class KitchensService {
                 };
 
                 const result: any = await uploadFromBuffer(buffer);
-                req.body.image = result.secure_url;
+                req.body.image = {
+                    url : result.secure_url,
+                    publicId : result.public_id
+                }
             }
             next();
         } catch (error) {
@@ -53,14 +56,109 @@ class KitchensService {
         }
     };
 
+
+
+
+           private async deleteImage (publicId: string): Promise<void> {
+               
+              try {
+                 await cloudinary.uploader.destroy(publicId);
+              } catch (error) {
+                 console.log("Failed to delete user image from cloudinary", error);
+                 throw error;
+              }
+           }
     
+            deleteKitchenImage = expressAsyncHandler(
+               async (req: Request, res: Response, next: NextFunction) => {
+           
+                   const kitchen = await kitchenSchema.findById(req.params.id);
+                   if(!kitchen) return next(new ApiError(`${req.__("not_found")}`, 404));
+           
+                   if (
+           
+                       kitchen.image &&
+                       typeof kitchen.image === "object" &&
+                       "publicId" in kitchen.image &&
+                       kitchen.image.publicId &&
+                       !kitchen.image.url.startsWith(`$process.env.BASE_URL /images/kitchen/kitchen-default.png` )
+                   ){
+                       try {
+                           await this.deleteImage(kitchen.image.publicId);
+                           kitchen.image = {
+                               url : 'kitchen-default.png',
+                               publicId : ''
+                           };
+                           await kitchen.save();
+           
+                       } catch (error) {
+                           return next(new ApiError("Image upload failed", 500));
+                       }
+                   }
+           
+                   res
+                   .status(200)
+                   .json({ message: "Kitchen image deleted successfully", data: kitchen });
+           
+               }
+             )
+    
+    
+               updateImage = async (req: Request, res: Response, next: NextFunction) => {
+                 try {
+                   if (req.file) {
+                     const oldImageId = req.body.oldImageId;
+             
+                     if (oldImageId) {
+                       await cloudinary.uploader.destroy(oldImageId, { resource_type: "image" });
+                     }
+             
+                     const buffer = await sharp(req.file.buffer)
+                       .resize(1200, 1200)
+                       .webp({ quality: 95 })
+                       .toBuffer();
+             
+                     const uploadFromBuffer = (buffer: Buffer) => {
+                       return new Promise((resolve, reject) => {
+                         const stream = cloudinary.uploader.upload_stream(
+                           {
+                             resource_type: "image",
+                             folder: "kitchen",
+                             format: "webp",
+                           },
+                           (error, result) => {
+                             if (error) return reject(error);
+                             resolve(result);
+                           }
+                         );
+                         stream.write(buffer);
+                         stream.end();
+                       });
+                     };
+             
+                     const result: any = await uploadFromBuffer(buffer);
+                     req.body.image = {
+                       url: result.secure_url,
+                       publicId: result.public_id,
+                     };
+                   }
+             
+                   next();
+                 } catch (error) {
+                   console.error("Update failed", error);
+                   return next(new ApiError("Image update failed", 500));
+                 }
+               };
+
 
     createKitchen = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const kitchen: Kitchen = await kitchenSchema.create(req.body);
+        console.log(req.body)
         if (!kitchen) {
             return next(new ApiError(`${req.__('not_found')}`, 404));
         }
         res.status(201).json({ message: "Kitchen created successfully", data: kitchen });
+        console.log("kitchen.image ===>", kitchen.image)
     });
 
     getKitchenById = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -77,7 +175,14 @@ class KitchensService {
     });
 
     updateKitchen = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const kitchen: Kitchen | null = await kitchenSchema.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const kitchen: Kitchen | null = await kitchenSchema.findByIdAndUpdate(req.params.id, 
+            {
+                name : req.body.name,
+                description : req.body.description,
+                managerId : req.body.managerId,
+                ...(req.body.image && { image: req.body.image }),
+
+            }, { new: true });
         if (!kitchen) {
             return next(new ApiError(`${req.__('not_found')}`, 404));
         }
