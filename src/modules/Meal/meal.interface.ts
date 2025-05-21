@@ -6,18 +6,19 @@ export interface Meal extends Document {
 
     readonly name : string;
     description: string;
-    image : string;
+    image : ImageType | string;
     managerId :string ;
     kitchenId : string ;
-    ingredients : 
-    [
-        {
+    ingredients : string ;
+    // ingredients : 
+    // [
+    //     {
             
-            stockItemId : string,
-            quantityUsed : number
+    //         stockItemId : string,
+    //         quantityUsed : number
             
-        }
-     ] ;
+    //     }
+    //  ] ;
     
     price : number;
     numberOfMeals : number;
@@ -25,6 +26,11 @@ export interface Meal extends Document {
     isAvailable : boolean;
 
 
+}
+
+export interface ImageType {
+    url: string;
+    publicId: string;
 }
 
 // type Category = 'breakfast' | 'lunch' | 'dinner' | 'drinks' | 'desserts' | 'juices';

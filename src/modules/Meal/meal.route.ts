@@ -20,11 +20,18 @@ mealRouter.post('/', isAuthenticated([UserRoles.WAITER])
     ,mealsValidation.createOne,mealsService.createMeals);
 
 mealRouter.put('/:id', isAuthenticated([UserRoles.WAITER]),
-    mealsService.uploadImage,mealsService.saveImage
+    mealsService.uploadImage,mealsService.updateImage
     ,mealsValidation.updateOne,mealsService.updateMeal); 
 
 mealRouter.delete('/:id', isAuthenticated([UserRoles.WAITER])
     ,mealsValidation.deleteOne,mealsService.deleteMeal);
+
+    mealRouter.delete('/:id/image',
+         isAuthenticated([UserRoles.MANAGER]),
+         mealsValidation.deleteOne,
+         mealsService.deleteMealImage
+
+)
 
 
 

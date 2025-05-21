@@ -15,14 +15,25 @@ const usersSchema = new mongoose.Schema<Users>({
     passwordResetCodeExpires : { type : Date,trim : true},
     passwordResetCodeVerified : {type : Boolean,trim : true},
 
-    image : { type : String, default : 'user-default.png'},
+    image :  {
+        url: {type : String, default : 'user-default.png'},
+        publicId : {type : String, default : ''}
+     }
 
 }, {timestamps : true})
 
-const imagesUrl = (document : Users) => {
-    if(document.image && document.image.startsWith('user'))  document.image = `${process.env.BASE_URL}/images/user/${document.image}`
-    
-};
+    // Format image URL
+const imagesUrl = (document: Users) => {
+    if (
+      document.image &&
+      typeof document.image === 'object' &&
+      'url' in document.image &&
+      typeof document.image.url === 'string' &&
+      document.image.url.startsWith('user')
+    ) {
+      document.image.url = `${process.env.BASE_URL}/images/user/${document.image.url}`
+    }
+  };
 
 usersSchema
 .post('init',imagesUrl)

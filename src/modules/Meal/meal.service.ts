@@ -23,6 +23,8 @@ class MealsService {
             return next(new ApiError(`${req.__('not_found')}`,404));
         }
         await meal.populate([{path : 'managerId',select : 'name'},{path : 'kitchenId',select : 'name'}]);
+        console.log("Meal.image ===>", meal.image);
+
         // console.log(meal);
         res.status(201).json({message:"Meal created successfully",data: meal});
     })
@@ -48,7 +50,17 @@ class MealsService {
 
     updateMeal : any = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-        const meal : Meal | null = await mealSchema.findByIdAndUpdate(req.params.id, req.body, {new: true});
+        const meal : Meal | null = await mealSchema.findByIdAndUpdate(req.params.id,
+             {name : req.body.name,
+             description : req.body.description,
+             price : req.body.price,
+             ...(req.body.image && {image : req.body.image}),
+             ...(req.body.kitchenId && {kitchenId : req.body.kitchenId}),
+             ...(req.body.managerId && {managerId : req.body.managerId}),
+             ...(req.body.status && {status : req.body.status}),
+             ...(req.body.category && {category : req.body.category}),
+
+             }, {new: true});
         if(!meal) {
             return next(new ApiError(`${req.__('not_found')}`,404));
         }
@@ -101,7 +113,10 @@ class MealsService {
                  };
 
                  const result: any = await uploadFromBuffer(buffer);
-                req.body.image = result.secure_url;
+                req.body.image = {
+                    url : result.secure_url,
+                    publicId : result.public_id
+                }
          }
          next();
         }catch (error){
@@ -110,6 +125,98 @@ class MealsService {
         }
 
      }
+
+       private async deleteImage (publicId: string): Promise<void> {
+           
+          try {
+             await cloudinary.uploader.destroy(publicId);
+          } catch (error) {
+             console.log("Failed to delete user image from cloudinary", error);
+             throw error;
+          }
+       }
+
+        deleteMealImage = expressAsyncHandler(
+           async (req: Request, res: Response, next: NextFunction) => {
+       
+               const meal = await mealSchema.findById(req.params.id);
+               if(!meal) return next(new ApiError(`${req.__("not_found")}`, 404));
+       
+               if (
+       
+                   meal.image &&
+                   typeof meal.image === "object" &&
+                   "publicId" in meal.image &&
+                   meal.image.publicId &&
+                   !meal.image.url.startsWith(`$process.env.BASE_URL /images/meal/meal-default.png` )
+               ){
+                   try {
+                       await this.deleteImage(meal.image.publicId);
+                       meal.image = {
+                           url : 'meal-default.png',
+                           publicId : ''
+                       };
+                       await meal.save();
+       
+                   } catch (error) {
+                       return next(new ApiError("Image upload failed", 500));
+                   }
+               }
+       
+               res
+               .status(200)
+               .json({ message: "User image deleted successfully", data: meal });
+       
+           }
+         )
+
+
+           updateImage = async (req: Request, res: Response, next: NextFunction) => {
+             try {
+               if (req.file) {
+                 const oldImageId = req.body.oldImageId;
+         
+                 if (oldImageId) {
+                   await cloudinary.uploader.destroy(oldImageId, { resource_type: "image" });
+                 }
+         
+                 const buffer = await sharp(req.file.buffer)
+                   .resize(1200, 1200)
+                   .webp({ quality: 95 })
+                   .toBuffer();
+         
+                 const uploadFromBuffer = (buffer: Buffer) => {
+                   return new Promise((resolve, reject) => {
+                     const stream = cloudinary.uploader.upload_stream(
+                       {
+                         resource_type: "image",
+                         folder: "meal",
+                         format: "webp",
+                       },
+                       (error, result) => {
+                         if (error) return reject(error);
+                         resolve(result);
+                       }
+                     );
+                     stream.write(buffer);
+                     stream.end();
+                   });
+                 };
+         
+                 const result: any = await uploadFromBuffer(buffer);
+                 req.body.image = {
+                   url: result.secure_url,
+                   publicId: result.public_id,
+                 };
+               }
+         
+               next();
+             } catch (error) {
+               console.error("Update failed", error);
+               return next(new ApiError("Image update failed", 500));
+             }
+           };
+          
  }
 
 

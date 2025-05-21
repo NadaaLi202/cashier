@@ -13,7 +13,12 @@ export interface Users extends Document{
     passwordResetCode: string | undefined;
     passwordResetCodeExpires: Date | number | undefined;
     passwordResetCodeVerified: boolean | undefined ;
-    image: string;
+    image:  ImageType | string;
+}
+
+export interface ImageType{
+    url: string;
+    publicId: string;
 }
 
 export enum UserRoles  {
