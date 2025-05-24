@@ -1,19 +1,20 @@
 import mongoose from "mongoose";
-import { ZodNumber } from "zod";
 
 
 
 const stockSchema = new mongoose.Schema({
 
-    nameOfItem: {
+    name: {
         type : String,
-        required : true
+        required : true,
+        unique : true
     },
     quantity : {
         type: Number,
-        required : true
+        required : true,
+        default : 0
     },
-    price : {
+    pricePerUnit : {
         type : Number,
         required : true
     },

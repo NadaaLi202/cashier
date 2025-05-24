@@ -4,9 +4,9 @@ import { Types,Document } from "mongoose";
 
 export interface  Stock extends Document {
 
-    nameOfItem : string ;
+    name : string ;
     quantity : number;
-    price : number;
+    pricePerUnit : number;
     category : string;
     unit : string;
     managerId : Types.ObjectId;

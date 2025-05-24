@@ -10,6 +10,7 @@ import { orderRouter } from "./modules/Order";
 import { tableRoutes } from "./modules/Table";
 import { paymentRouter } from "./modules/Payment";
 import stockRouter from "./modules/Stock/stock.routes";
+import StockOutFlowRouter from "./modules/StockOutflow/stockOutFlow.routes";
 
 
 declare module "express" {
@@ -43,6 +44,7 @@ const Routes : (app : Application) => void = (app: express.Application) : void =
     app.use('/api/v1/table', tableRoutes)
     app.use('/api/v1/payment', paymentRouter)
     app.use('/api/v1/stock', stockRouter)
+    app.use('/api/v1/stockOutFlow', StockOutFlowRouter)
     
     app.all('*', (req:express.Request, res:express.Response, next:express.NextFunction) => {  
         next(new ApiError(`Route ${req.originalUrl} not found`, 404));

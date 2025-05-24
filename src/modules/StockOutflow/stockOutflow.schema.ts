@@ -22,7 +22,8 @@ const stockOutFlowSchema = new mongoose.Schema({
 
     quantityUsed : {
         type : Number,
-        required : true
+        required : true,
+        min : 0.01
     },
     date : {
         type : Date,

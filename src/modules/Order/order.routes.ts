@@ -42,7 +42,7 @@ router.patch(
 
 router.patch(
     '/:id/complete',
-    isAuthenticated([UserRoles.CASHIER]),
+    // isAuthenticated([UserRoles.CASHIER]),
     asyncHandler(orderCtrl.completeOrder)
 )
 

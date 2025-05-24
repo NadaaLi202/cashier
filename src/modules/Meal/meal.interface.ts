@@ -5,29 +5,26 @@ import { Document , Schema } from "mongoose";
 export interface Meal extends Document {
 
     readonly name : string;
-    description: string;
     image : ImageType | string;
     managerId :string ;
     kitchenId : string ;
-    ingredients : string ;
-    // ingredients : 
-    // [
-    //     {
-            
-    //         stockItemId : string,
-    //         quantityUsed : number
-            
-    //     }
-    //  ] ;
+    notes : string ;
+    ingredients : Ingredient[]; 
+   
     
     price : number;
-    numberOfMeals : number;
     category : string;
     isAvailable : boolean;
 
 
 }
 
+
+export interface Ingredient {
+    stockItemId : string;
+    quantityUsed : number;
+    unit : string;
+}
 export interface ImageType {
     url: string;
     publicId: string;

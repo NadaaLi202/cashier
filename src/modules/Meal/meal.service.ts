@@ -13,21 +13,58 @@ import cloudinary from "../../utils/cloudinary";
 class MealsService {
 
 
+  createMeals: any = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    type IngredientInput = {
+        stockItemId?: string;
+        quantityUsed?: number;
+        unit?: string;
+    };
 
-    createMeals : any = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const ingredients: IngredientInput[] = [];
 
-        const meal : Meal | null = await mealSchema.create(req.body);
+    Object.keys(req.body).forEach((key) => {
+        const match = key.match(/^\[ingredients]\[(\d+)]\[(\w+)]$/);
+        if (match) {
+            const index = parseInt(match[1]);
+            const field = match[2];
 
-        console.log(req.body);
-        if(!meal) {
-            return next(new ApiError(`${req.__('not_found')}`,404));
+            if (!ingredients[index]) {
+                ingredients[index] = {};
+            }
+
+            const mappedField = field === 'stockItem' ? 'stockItemId' : field;
+            ingredients[index][mappedField as keyof IngredientInput] = req.body[key];
         }
-        await meal.populate([{path : 'managerId',select : 'name'},{path : 'kitchenId',select : 'name'}]);
-        console.log("Meal.image ===>", meal.image);
+    });
 
-        // console.log(meal);
-        res.status(201).json({message:"Meal created successfully",data: meal});
-    })
+    ingredients.forEach((item) => {
+        if (item.quantityUsed) {
+            item.quantityUsed = parseFloat(item.quantityUsed as unknown as string);
+        }
+        if (!item.unit) {
+            item.unit = 'pcs';
+        }
+    });
+
+    req.body.ingredients = ingredients;
+
+    const meal: Meal | null = await mealSchema.create(req.body);
+
+    console.log('Formatted Ingredients:', req.body.ingredients);
+
+    if (!meal) {
+        return next(new ApiError(`${req.__('not_found')}`, 404));
+    }
+
+    await meal.populate([
+        { path: 'managerId', select: 'name' },
+        { path: 'kitchenId', select: 'name' }
+    ]);
+
+    res.status(201).json({ message: "Meal created successfully", data: meal });
+});
+
+
 
     getMealById : any = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
@@ -51,14 +88,9 @@ class MealsService {
     updateMeal : any = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const meal : Meal | null = await mealSchema.findByIdAndUpdate(req.params.id,
-             {name : req.body.name,
-             description : req.body.description,
-             price : req.body.price,
-             ...(req.body.image && {image : req.body.image}),
-             ...(req.body.kitchenId && {kitchenId : req.body.kitchenId}),
-             ...(req.body.managerId && {managerId : req.body.managerId}),
-             ...(req.body.status && {status : req.body.status}),
-             ...(req.body.category && {category : req.body.category}),
+             {
+                 $set : req.body
+
 
              }, {new: true});
         if(!meal) {

@@ -12,10 +12,7 @@ class MealsValidation {
         const meal = await  mealSchema.findOne({name : val});
         if(meal) throw new Error(`${req.__('not_found')}`);
         return true;
-    }),
-
-     body('description').optional()
-        .isLength({min : 3, max : 500}).withMessage('description must be at least 3 characters long')
+    })
     , validatorMiddleware ]
 
     updateOne =  [
