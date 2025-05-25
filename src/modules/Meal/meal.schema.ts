@@ -31,6 +31,7 @@ const mealSchema = new mongoose.Schema({
             unit : {
                 type : String,
                 required : true,
+                enum : ['pcs','ml','grams','kg','liters','cans','cups','tsp','tbsp','packets','boxes'], // tsp = teaspoon للتوابل
                 default : 'pcs'
             },
         },
