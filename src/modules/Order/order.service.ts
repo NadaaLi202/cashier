@@ -258,33 +258,44 @@ class OrderService {
             
             return updatedOrder;
         } catch (error) {
+            console.log(error)
             if(error instanceof ApiError) throw error
             throw new ApiError('Failed to add meal to order', 500);
         }
     }
 
-    async deleteMealFromOrder({ orderId, mealId }: { orderId: string, mealId: string }) {
+    async deleteMealFromOrder({ orderId, mealId: mealIdData }: { orderId: string, mealId: string }) {
         try {
             const order = await this.isOrderExist(orderId);
             
             // Update the orderItems array directly
-            const orderItems = order.orderItems.map(item => 
-                item.mealId.toString() === mealId.toString() 
-                    ? { ...item, isCancelled: true }
-                    : item
-            );
+            const orderItems = order.orderItems.map(item => {
+                // console.log(item.mealId.toString(), mealIdData)
+                const { isCancelled, kitchenId, mealId, price, quantity, note } = item;
+                return item.mealId.toString() === mealIdData.toString() 
+                    ? { 
+                        kitchenId, mealId, price, quantity, note,
+                        isCancelled: true 
+                    }
+                    : {
+                        isCancelled, kitchenId, mealId, price, quantity, note
+                    }
+            });
 
-            console.log(orderItems[0].isCancelled)
-    
+            // console.log(orderItems);
+
             const totalPrice = orderItems.reduce(
                 (acc, item) => acc + (item.isCancelled ? 0 : item.price * item.quantity), 0
             );
 
-            const updatedOrder = await Order.findByIdAndUpdate(
-                orderId,
-                { $set: { orderItems, totalPrice } },
-                { new: true }
+            const updatedOrder = await this.orderdDataSource.updateOne(
+                { _id: orderId },
+                { $set: { orderItems, totalPrice } }
             );
+            
+            if (!updatedOrder) {
+                throw new ApiError('Failed to update order', 500);
+            }
             
             return updatedOrder;
         } catch (error) {

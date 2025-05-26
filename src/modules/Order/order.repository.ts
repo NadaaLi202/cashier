@@ -27,7 +27,7 @@ class OrderRepository<T = IOrder> {
     async findMany(query: FilterQuery<T>, { limit, skip }: { limit: number, skip: number }): Promise<T[]> {
         return this.orderModel.find(query).limit(limit).skip(skip).populate([
             { path: 'orderItemsData' }
-        ]);;
+        ]);
     }
 
     async deleteOne(query: FilterQuery<T>): Promise<boolean> {

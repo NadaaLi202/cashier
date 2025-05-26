@@ -1,16 +1,17 @@
 import ApiError from "../../utils/apiErrors";
 import { pagenation } from "../../utils/pagination";
-import { IOrder, orderRepository, orderService, OrderStatus } from "../Order";
-import { ITable, tableService } from "../Table";
+import { orderService, OrderStatus } from "../Order";
+import { tableService } from "../Table";
 import { paymentRepository } from "./payment.repository";
 import { ICreatePayment, PaymentMethod } from "./payment.types";
 
 class PaymentService {
+
     constructor(private readonly paymentDataSource = paymentRepository) {}
 
     async createPayment(data: ICreatePayment) {
         try {
-            const { orderId, discount, paymentMethods } = data;
+            const { orderId, discount, paymentMethods, tax } = data;
             
             // check if order exists and avalible
             const order = await orderService.isOrderExist(orderId);
@@ -31,16 +32,16 @@ class PaymentService {
             const orderTotalAmount = order.totalPrice;
             let expectedValue = orderTotalAmount;
             const totalAmount = paymentMethods.reduce((acc, curr) => acc + curr.amount, 0);
+            if(tax) {
+                expectedValue += ((orderTotalAmount * tax) / 100);
+            }
             if (discount) {
-                if (discount > orderTotalAmount) {
-                    throw new ApiError('Discount is greater than amount', 400);
-                }
                 expectedValue -= ((orderTotalAmount * discount) / 100);
             }
 
             // check if total amount is correct
             if (expectedValue != totalAmount) {
-                throw new ApiError('total amount is not correct', 400);
+                throw new ApiError('The amount paid is not enough for the order value', 400);
             }
             
             const payment = await this.paymentDataSource.createOne({ ...data, totalAmount });

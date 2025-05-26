@@ -8,6 +8,7 @@ export interface IPayment extends IDBModel {
         amount: number;
     }[];
     discount?: number;
+    tax?: number;
     totalAmount: number;
 }
 
@@ -20,6 +21,7 @@ export interface ICreatePayment {
     cashierId: string;
     orderId: string;
     discount?: number;
+    tax?: number;
     paymentMethods: {
         method: PaymentMethod;
         amount: number;
