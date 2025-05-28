@@ -10,8 +10,6 @@ export interface Meal extends Document {
     kitchenId : string ;
     notes : string ;
     ingredients : Ingredient[]; 
-   
-    
     price : number;
     category : string;
     isAvailable : boolean;

@@ -10,6 +10,7 @@ export const createPaymentSchema = z.object({
         amount: z.number().min(0),
     })),
     discount: z.number().min(0).max(20).int().optional(),
+    tax: z.number().min(0).int().optional(),
 })
 
 export const getAllPaymentsSchema = z.object({

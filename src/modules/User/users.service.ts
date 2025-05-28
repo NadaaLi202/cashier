@@ -21,10 +21,7 @@ class UsersService {
       const user: Users | null = await usersSchema.findByIdAndUpdate(
         req.params.id,
         {
-          name: req.body.name,
-          username: req.body.username,
-          active: req.body.active,
-          ...(req.body.image && { image: req.body.image }),
+          $set: req.body,
         },
         { new: true }
       );

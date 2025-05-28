@@ -2,11 +2,11 @@
 import { Document , Schema } from "mongoose";
 
 export interface Users extends Document{
-    readonly username : string;
+     username : string;
     name : string;
-    readonly email: string;
+     email: string;
     password: string;
-    readonly role : UserRoles;
+     role : UserRoles;
     readonly active : boolean;
     hasPassword: boolean;
     passwordChangedAt : Date | number;
