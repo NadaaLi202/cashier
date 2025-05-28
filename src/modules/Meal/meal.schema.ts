@@ -56,4 +56,4 @@ const imagesUrl = (document: Meal) => {
   };
 mealSchema.post('save',imagesUrl);
 
-export default mongoose.model<Meal>('Meal',mealSchema);
+export default mongoose.model<Meal>('Meals',mealSchema);

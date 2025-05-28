@@ -27,6 +27,7 @@ export interface ICreateOrderQuery {
     waiterId: string;
     type: OrderType,
     tableNumber?: number;
+    isPaid?: boolean;
     orderItems: {
         mealId: string;
         quantity: number;
@@ -38,6 +39,7 @@ export interface ICreateOrderData extends ICreateOrderQuery {
     totalPrice: number; 
     orderItems: IOrderMealItem[];
     stockOutflows?: (string | Types.ObjectId)[] | undefined ; 
+    isPaid?: boolean
 
 }
 

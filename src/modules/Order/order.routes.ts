@@ -40,11 +40,11 @@ router.patch(
     asyncHandler(orderCtrl.changeTable)
 )
 
-router.patch(
-    '/:id/complete',
-    // isAuthenticated([UserRoles.CASHIER]),
-    asyncHandler(orderCtrl.completeOrder)
-)
+// router.patch(
+//     '/:id/pay',
+//     // isAuthenticated([UserRoles.CASHIER]),
+//     asyncHandler(orderCtrl.markOrderAsPaid)
+// )
 
 router.patch(
     '/:id/cancel',

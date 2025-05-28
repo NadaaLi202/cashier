@@ -5,7 +5,7 @@ const mealIngredientSchema =
  new mongoose.Schema({
      mealId: { 
         type: mongoose.Schema.Types.ObjectId,
-         ref: 'Meals',
+         ref: 'Meal',
           required: true 
         },
          stockItemId: 

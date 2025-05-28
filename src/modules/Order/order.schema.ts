@@ -5,7 +5,7 @@ import ApiError from "../../utils/apiErrors";
 const orderSchema = new Schema({
     waiterId: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Users',
         required: true
     },
     // paymentId: {
@@ -35,7 +35,7 @@ const orderSchema = new Schema({
         },
         mealId: {
             type: Schema.Types.ObjectId,
-            ref: 'Meal',
+            ref: 'Meals',
             required: true
         },
         quantity: {
@@ -52,7 +52,7 @@ const orderSchema = new Schema({
         },
         note: {
             type: String,
-            reqyured: false
+            required: false
         }
     }],
     totalPrice: {

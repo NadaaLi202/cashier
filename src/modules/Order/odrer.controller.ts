@@ -16,9 +16,9 @@ import ApiError from "../../utils/apiErrors";
 
 const createOrder = async (req: AuthRequest, res: Response) => {
   const waiterId = req?.user?.userId as string;
-  const { orderItems, tableNumber, type } = createOrderSchema.parse(req.body);
+  const { orderItems, tableNumber, type, isPaid } = createOrderSchema.parse(req.body);
 
-  const order = await orderService.createOrder({ orderItems, type, tableNumber, waiterId });
+  const order = await orderService.createOrder({ orderItems, type, tableNumber, waiterId , isPaid });
 
   res.status(201).json({
     success: true,
@@ -131,16 +131,16 @@ const cancelOrder = async (req: AuthRequest, res: Response) => {
 
 
 
-const completeOrder = 
+const markOrderAsPaid = 
   async (req: Request, res: Response ,next : NextFunction) => {
 
-    const order = await orderService.completeOrder(req.params.id);
+    const order = await orderService.markOrderAsPaid(req.params.id);
     if(!order) {
       return next(new ApiError(`${req.__('not_found')}`,404));
     }
     res.status(200).json({
       success: true,
-      message: 'Order completed successfully',
+      message: 'Order marked as paid successfully',
       data: order
     });
     
@@ -192,7 +192,7 @@ export const orderCtrl = {
   getAllOrders,
   changeTable,
   cancelOrder,
-  completeOrder,
+  markOrderAsPaid,
   getOrderByCode,
   getOrderByTable,
   getOrderById

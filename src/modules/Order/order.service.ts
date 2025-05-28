@@ -37,11 +37,14 @@ class OrderService {
 
     async createOrder(data: ICreateOrderQuery) {
         try {
-            const { orderItems, tableNumber, waiterId, type } = data;
+            const { orderItems, tableNumber, waiterId, type , isPaid } = data;
 
             let orderObject: ICreateOrderData = {} as ICreateOrderData;
             orderObject.type = type;
             orderObject.waiterId = waiterId;
+            orderObject.isPaid = Boolean(isPaid);
+
+
 
             if (type === OrderType.DINE_IN ) {
                 if (!tableNumber) {
@@ -77,13 +80,22 @@ class OrderService {
                     quantity: item.quantity,
                     price: mealObj.price,
                     isCancelled: false,
-                    note: item?.note || ""
+                    note: item?.note || "",
+
                 });
             }
             orderObject.orderItems = newOrderItems;
             orderObject.totalPrice = totalPrice;
             
             const order = await this.orderdDataSource.createOne(orderObject);
+            // console.log(order)
+            console.log('isPaid value:', isPaid);
+
+            //////// إذا كان الطلب مدفوعًا، قم بتحديث حالة الدفع
+        if ( order && orderObject.isPaid) {
+            await this.markOrderAsPaid(order._id.toString());
+        }
+
 
             if (tableNumber) {
                 await tableService.updateTable({ tableNumber, data: { isAvailable: false } });
@@ -101,127 +113,6 @@ class OrderService {
 
 
 
-    // async createOrder(data: ICreateOrderQuery) {
-    //     try {
-    //       const { orderItems, tableNumber, waiterId, type } = data;
-      
-    //       let orderObject: ICreateOrderData = {} as ICreateOrderData;
-    //       orderObject.type = type;
-    //       orderObject.waiterId = waiterId;
-      
-    //       if (type === OrderType.DINE_IN) {
-    //         if (!tableNumber) {
-    //           throw new ApiError("يجب عليك تحديد الطاولة", 400);
-    //         }
-    //         // 1. تأكد من وجود الترابيزة وحالتها
-    //         const table = await tableService.isTableAvalible(tableNumber);
-    //         if (!table) {
-    //           throw new ApiError("الترابيزة غير موجودة أو مش متاحة", 404);
-    //         }
-    //         orderObject.tableNumber = tableNumber;
-    //       }
-      
-    //       // 2. تأكد من وجود الوجبات المطلوبة
-    //       // 3. تأكد من وجود مكونات كافية في المخزون لكل وجبة
-    //       let subtotalPrice = 0;
-    //       const newOrderItems: IOrderMealItem[] = [];
-      
-    //       // لجمع كميات المكونات المطلوبة لكل stockItemId
-    //       const requiredStockMap = new Map<string, number>();
-      
-    //       // اجلب الوجبات دفعة واحدة
-    //       const mealIds = orderItems.map(item => item.mealId);
-    //       const meals = await Meal.find({ _id: { $in: mealIds } }) as any[];  // هنا أضفنا as any[] عشان نتفادى الخطأ
-      
-    //       for (const item of orderItems) {
-    //         const meal = meals.find(m => m._id.toString() === item.mealId);
-    //         if (!meal || !meal.isAvailable) {
-    //           throw new ApiError("الوجبة غير متوفرة حاليا", 404);
-    //         }
-      
-    //         // حساب السعر الكلي
-    //         subtotalPrice += meal.price * item.quantity;
-      
-    //         // إضافة الوجبة للطلب
-    //         newOrderItems.push({
-    //           mealId: meal._id.toString(),
-    //           kitchenId: meal.kitchenId.toString(),
-    //           quantity: item.quantity,
-    //           price: meal.price,
-    //           status: OrderMealStatus.PENDING,
-    //         });
-      
-    //         // جمع كمية المكونات المطلوبة للمخزون
-    //         for (const ingredient of meal.ingredients) {
-    //           const currentNeeded = requiredStockMap.get(ingredient.stockItemId.toString()) || 0;
-    //           const totalNeeded = ingredient.quantityUsed * item.quantity;
-    //           requiredStockMap.set(ingredient.stockItemId.toString(), currentNeeded + totalNeeded);
-    //         }
-    //       }
-      
-    //       // 3. تحقق من توفر الكميات المطلوبة في المخزون
-    //       for (const [stockItemId, requiredQty] of requiredStockMap.entries()) {
-    //         const stockItem = await stockSchema.findById(stockItemId);
-    //         if (!stockItem) {
-    //           throw new ApiError(`مكون المخزون غير موجود: ${stockItemId}`, 404);
-    //         }
-    //         if (stockItem.quantity < requiredQty) {
-    //           throw new ApiError(`كمية المكون ${stockItem.nameOfItem} غير كافية في المخزون`, 400);
-    //         }
-    //       }
-      
-    //       // 4. خصم الكميات المطلوبة من المخزون لكل مكون
-    //       const stockOutflowRecords = [];
-    //       for (const [stockItemId, requiredQty] of requiredStockMap.entries()) {
-    //         const stockItem = await stockSchema.findById(stockItemId);
-    //         if (!stockItem) continue;
-      
-    //         stockItem.quantity -= requiredQty;
-    //         await stockItem.save();
-      
-    //         // 5. تسجيل الخصم في جدول StockOutflow
-    //         const stockOutflow = await stockOutflowSchema.create({
-    //           stockId: stockItem._id,
-    //           quantityUsed: requiredQty,
-    //           orderId: null,  // سيتم التحديث بعد إنشاء الطلب
-    //           date: new Date(),
-    //         });
-      
-    //         stockOutflowRecords.push(stockOutflow);
-    //       }
-      
-    //       // 6. إنشاء الطلب
-    //       orderObject.orderItems = newOrderItems;
-    //       orderObject.subtotalPrice = subtotalPrice;
-    //       orderObject.stockOutflows = stockOutflowRecords.map(o => o._id); // تأكد أن خاصية stockOutflows موجودة في ICreateOrderData
-      
-    //       const order = await this.orderdDataSource.createOne(orderObject); // بدون تمرير session
-      
-    //       if (!order) {
-    //         throw new ApiError("فشل في إنشاء الطلب، الطلب فارغ", 500);
-    //       }
-      
-    //       // بعد إنشاء الطلب، نربط سجلات StockOutflow بالطلب
-    //       await stockOutflowSchema.updateMany(
-    //         { orderId: null },
-    //         { orderId: order._id }
-    //       );
-      
-    //       // 7. تحديث حالة الترابيزة إلى "مشغولة"
-    //       if (tableNumber) {
-    //         await tableService.updateTable({ tableNumber, data: { isAvailable: false } });  // بدون تمرير session
-    //       }
-      
-    //       return order;
-    //     } catch (error) {
-    //       console.log(error);
-    //       if (error instanceof ApiError) {
-    //         throw error;
-    //       }
-    //       throw new ApiError("فشل في إنشاء الطلب", 500);
-    //     }
-    //   }
-      
 
 
 
@@ -452,114 +343,12 @@ class OrderService {
 
 
 
-    // async deductStockForOrder(orderId: string) {
-    //     try {
-    //         const order = await this.isOrderExist(orderId);
-    //         if (order.status !== OrderStatus.COMPLETED) {
-    //             throw new ApiError('Only completed orders can update stock', 400);
-    //         }
-    
-    //         const stockUsageMap = new Map<string, number>();
-    
-    //         for (const item of order.orderItems) {
-    //             const meal = await Meal.findById(item.mealId).populate('ingredients.stockItemId');
-    //             if (!meal) continue;
-    
-    //             const mealQty = item.quantity;
-    
-    //             for (const ingredient of meal.ingredients) {
-    //                 const stockId = (ingredient.stockItemId as any )._id.toString();
-    //                 const usedQty = ingredient.quantityUsed * mealQty;
-    
-    //                 const stockUsage = stockUsageMap.get(stockId) || 0;
-    //                 stockUsageMap.set(stockId, stockUsage + usedQty);
-    //             }
-    //         }
-    
-    //         // تحديث المخزون 
-    //         for (const [stockId, totalUsed] of stockUsageMap.entries()) {
-    //             const stockItem = await stockSchema.findById(stockId);
-    //             if (!stockItem) continue;
-    
-    //             if (stockItem.quantity < totalUsed) {
-    //                 throw new ApiError(`Insufficient stock for ${stockItem.nameOfItem}`, 400);
-    //             }
-    //             stockItem.quantity -= totalUsed;
-    //             await stockItem.save();
-    //         }
-    
-    //         return {
-    //             success: true,
-    //             message: 'Stock updated successfully'
-    //         };
-    //     } catch (error) {
-    //         if (error instanceof ApiError) throw error;
-    //         throw new ApiError('Failed to update stock', 500);
-    //     }
-    // }
-
-
-
-    // async checkStockBeforeCompletion(orderId: string) {
-    //     const order = await Order.findById(orderId);
-    //     if (!order) throw new ApiError('Order not found', 404);
-    
-    //     for (const item of order.orderItems) {
-    //         const meal = await Meal.findById(item.mealId);
-    //         if (!meal) continue;
-    
-    //         const ingredients = JSON.parse(meal.ingredients) as {
-    //             stockItemId: string;
-    //             quantityUsed: number;
-    //         }[];
-    
-    //         for (const ingredient of ingredients) {
-    //             const totalQty = ingredient.quantityUsed * item.quantity;
-    //             const stockItem = await stockSchema.findById(ingredient.stockItemId);
-    
-    //             if (!stockItem) {
-    //                 throw new ApiError('Stock item not found', 404);
-    //             }
-    
-    //             if (stockItem.quantity < totalQty) {
-    //                 throw new ApiError(
-    //                     `Insufficient stock for "${stockItem.name}". Needed: ${totalQty}, Available: ${stockItem.quantity}`,
-    //                     400
-    //                 );
-    //             }
-    //         }
-    //     }
-    // }
-    
 
 
 
 
 
-
-
-
-    
-
-    // async completeOrder(orderId: string) {
-    //     const order = await Order.findById(orderId);
-    //     if (!order) throw new ApiError('Order not found', 404);
-    
-    //     if (order.status === OrderStatus.COMPLETED) {
-    //         throw new ApiError('Order is already completed', 400);
-    //     }
-    
-    //     order.status = OrderStatus.COMPLETED;
-    //     await order.save();
-    
-    //     return order;
-    // }
-
-
-
-
-
-    async completeOrder(orderId: string): Promise<IOrder> {
+    async markOrderAsPaid(orderId: string): Promise<IOrder> {
         // 1. الحصول على الطلب مع الوجبات
         const order = await Order.findById(orderId)
           .populate({
@@ -578,10 +367,10 @@ class OrderService {
         await this.deductStockAndRecordOutflows(order);
     
         // 4. تحديث حالة الطلب
-         order.status = OrderStatus.COMPLETED;
+         order.isPaid = true;
          return await order.save();
 
-    ;
+    
       }
     
       private async verifyStockAvailability(order: IOrder): Promise<void> {

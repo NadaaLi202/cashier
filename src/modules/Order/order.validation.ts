@@ -11,6 +11,7 @@ export const orderItemSchema = z.object({
 export const createOrderSchema = z.object({
     type: z.nativeEnum(OrderType),
     tableNumber: z.number().int().positive().optional(),
+    isPaid: z.boolean().optional(),
     orderItems: z.array(orderItemSchema),
 }).refine((data) => {
     if(data.type === OrderType.DINE_IN && !data.tableNumber) {
