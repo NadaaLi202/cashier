@@ -9,7 +9,7 @@ export  interface Kitchen  extends Document {
     image : ImageType | string;
     readonly isActive : boolean;
     readonly managerId : Types.ObjectId;
-    category : Category;
+    // category : Category;
 
 }
 
@@ -19,5 +19,5 @@ export interface ImageType {
 }
 
 
-type Category = 'breakfast' | 'lunch' | 'dinner' | 'drinks' | 'desserts' | 'juices';
+// type Category = 'breakfast' | 'lunch' | 'dinner' | 'drinks' | 'desserts' | 'juices';
 

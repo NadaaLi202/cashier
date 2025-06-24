@@ -3,5 +3,6 @@
 	"validation_length_password": "validation_length_password",
 	"validation_password_match": "validation_password_match",
 	"validation_email_check": "validation_email_check",
-	"not_found": "not_found"
+	"not_found": "not_found",
+	"validation_value": "validation_value"
 }

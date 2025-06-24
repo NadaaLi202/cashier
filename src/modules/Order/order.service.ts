@@ -300,44 +300,7 @@ class OrderService {
         }
     }
 
-    // async completeOrder(orderId: string) {
-    //     try {
-    //         const order = await this.isOrderExist(orderId);
-    //         if(order.status === OrderStatus.CANCELLED) {
-    //             throw new ApiError('Order is already cancelled', 400);
-    //         }
-    //         if(order.status === OrderStatus.COMPLETED) {
-    //             throw new ApiError('Order is already completed', 400);
-    //         }
-    //         return this.orderdDataSource.updateOne({ _id: orderId }, { status: OrderStatus.COMPLETED });
-    //     } catch (error) {
-    //         if(error instanceof ApiError) throw error
-    //         throw new ApiError('Failed to complete order', 500);
-    //     }
-    // }
 
-
-    // async completeOrder(orderId: string) {
-    //     try {
-    //       const order = await this.isOrderExist(orderId);
-    //       if (order.status === OrderStatus.CANCELLED) {
-    //         throw new ApiError('Order is already cancelled', 400);
-    //       }
-    //       if (order.status === OrderStatus.COMPLETED) {
-    //         throw new ApiError('Order is already completed', 400);
-    //       }
-      
-    //       await this.orderdDataSource.updateOne({ _id: orderId }, { status: OrderStatus.COMPLETED });
-      
-    //     //   // خصم الكميات من المخزون
-    //     //   await this.deductStockForOrder(orderId);
-      
-    //       return { message: 'Order completed successfully' };
-    //     } catch (error) {
-    //       if (error instanceof ApiError) throw error;
-    //       throw new ApiError('Failed to complete order', 500);
-    //     }
-    // }
 
     async sendOrderForDepartments(order: IOrder) {
         // console.log(order);
@@ -434,70 +397,6 @@ class OrderService {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /////////////////////////////////////////////////////////////
-
- //   3. handleStockOutflowForOrder (مع rollback في حالة الخطأ)
-
-//  async handleStockOutflowForOrder(order: IOrder) {
-//     const revertedStockItems: { stock: any; quantityToRevert: number }[] = [];
-
-//     try {
-//         for (const item of order.orderItems) {
-//             const meal = await Meal.findById(item.mealId);
-//             if (!meal) continue;
-
-//             const ingredients = JSON.parse(meal.ingredients) as {
-//                 stockItemId: string;
-//                 quantityUsed: number;
-//             }[];
-
-//             for (const ingredient of ingredients) {
-//                 const usedQty = ingredient.quantityUsed * item.quantity;
-//                 const stockItem = await stockSchema.findById(ingredient.stockItemId);
-//                 if (!stockItem) continue;
-
-//                 if (stockItem.quantity < usedQty) {
-//                     throw new ApiError(`Insufficient stock for ${stockItem.nameOfItem}`, 400);
-//                 }
-
-//                 stockItem.quantity -= usedQty;
-//                 await stockItem.save();
-
-//                 revertedStockItems.push({
-//                     stock: stockItem,
-//                     quantityToRevert: usedQty
-//                 });
-
-//                 await stockOutflowSchema.create({
-//                     stockItemId: stockItem._id,
-//                     orderId: order._id,
-//                     quantityUsed: usedQty,
-//                     date: new Date()
-//                 });
-//             }
-//         }
-//     } catch (err) {
-//         for (const { stock, quantityToRevert } of revertedStockItems) {
-//             stock.quantity += quantityToRevert;
-//             await stock.save();
-//         }
-
-//         throw new ApiError('Failed to deduct stock. Rollback applied.', 500);
-//     }
-// }
 
 
 
